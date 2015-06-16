@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 /**
@@ -12,12 +13,16 @@ import android.view.ViewGroup;
  */
 public class MainActivityFragment extends Fragment {
 
+    private Button btnStart;
+
     public MainActivityFragment() {
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        System.out.println("onCreateView");
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 }
