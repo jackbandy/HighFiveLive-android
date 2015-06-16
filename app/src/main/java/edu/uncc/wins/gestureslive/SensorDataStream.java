@@ -3,10 +3,13 @@ package edu.uncc.wins.gestureslive;
 import java.util.ArrayList;
 
 /**
- * Abstract class for providing a stream of accelerometer data. Uses the observer design pattern
+ * Abstract class for providing a stream of accelerometer data,
+ * uses the observer design pattern
+ *
  * Created by jbandy3 on 6/15/2015.
  */
-abstract class SensorDataStream {
+
+public abstract class SensorDataStream {
     private ArrayList<StreamListener> myListeners;
 
     /**
@@ -23,6 +26,7 @@ abstract class SensorDataStream {
     public void addListener(StreamListener listener){
         myListeners.add(listener);
     }
+
 
     /**
      * Getter for listeners

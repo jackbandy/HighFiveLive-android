@@ -1,5 +1,6 @@
 package edu.uncc.wins.gestureslive;
 
+import android.gesture.Gesture;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +23,27 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("GO!");
+
+
+                /*
+                SensorDataStream (who reports to...)
+                Segmentor (who listens to ^, reports to...)
+                SegmentProcessor (who reports to...)
+                FeatureExtractor (who reports to...)
+                GestureClassifier (who reports to nobody)
+                 */
+
+                //Create the data stream
+                SensorDataStream MSStream = new MSBandDataStream();
+                //Build the rest of the chain-of-responsibility starting with the top link
+                GestureClassifier myClassifier = new GestureClassifier();
+                FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
+                SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
+                //Create a segmentor that listens to the stream and reports to the processor
+                Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
+
+                //Start tracking the data
+                MSStream.startupStream();
             }
         });
 

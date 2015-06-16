@@ -3,12 +3,24 @@ package edu.uncc.wins.gestureslive;
 import java.util.ArrayList;
 
 /**
- * Abstract class for handling segments as part of chain-of-responsibility design pattern
+ * Abstract class for handling segments,
+ * a "link" in the chain-of-responsibility design pattern
  * Created by jbandy3 on 6/15/2015.
  */
 public abstract class SegmentHandler {
     protected SegmentHandler myNextHandler;
 
+    /**
+     * Top-link constructor, the end of the chain
+     */
+    public SegmentHandler(){
+        myNextHandler = null;
+    }
+
+    /**
+     * Standard constructor
+     * @param nextHandler the next link in the chain-of-responsibility
+     */
     public SegmentHandler(SegmentHandler nextHandler){
         myNextHandler = nextHandler;
     }
@@ -18,7 +30,7 @@ public abstract class SegmentHandler {
      * @param segmentPoints a 3-item array, whose items are coordinate ArrayLists of the segment
      *                      e.g. [ArrayList X Acc, ArrayList Y Acc, ArrayList Z Acc]
      *
-     * @param segmentFeatures an array of the extracted features of the segment, if they exist
+     * @param featureVector an array of the extracted features of the segment, if they exist
      */
-    abstract void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] segmentFeatures);
+    abstract void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] featureVector);
 }

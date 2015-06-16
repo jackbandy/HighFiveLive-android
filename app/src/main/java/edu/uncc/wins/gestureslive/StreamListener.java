@@ -7,5 +7,10 @@ package edu.uncc.wins.gestureslive;
  * Created by jbandy3 on 6/15/2015.
  */
 public interface StreamListener {
+
+    /**
+     * Called when a stream reports a new coordinate
+     * @param coordinate the most recent coordinate collected from the sensor
+     */
     void newSensorData(double[] coordinate);
 }

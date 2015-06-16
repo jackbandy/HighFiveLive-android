@@ -1,4 +1,4 @@
-package edu.uncc.wins.gestureslive.ConcreteClasses;
+package edu.uncc.wins.gestureslive;
 
 import android.os.AsyncTask;
 
@@ -16,15 +16,26 @@ import edu.uncc.wins.gestureslive.StreamListener;
 import edu.uncc.wins.gestureslive.SensorDataStream;
 
 /**
+ * Concrete implementation of the SensorDataStream abstract class,
+ * which allows for multiple "observers" to listen
+ * Most of the snippets were pasted from Microsoft's BandStreamingSample app
+ *
  * Created by jbandy3 on 6/15/2015.
  */
 public class MSBandDataStream extends SensorDataStream {
-    private BandClient client = null;
+    private BandClient client;
+
+
+    public MSBandDataStream(){
+        client = null;
+    }
+
 
     public void startupStream() {
         new appTask().execute();
         super.startupStream();
     }
+
 
     public void terminateStream() {
         if (client != null) {
@@ -36,12 +47,20 @@ public class MSBandDataStream extends SensorDataStream {
         }
     }
 
+    /**
+     *
+     * @return a 3-item array containing the 128 (might change) most recent points,
+     * collected in the stream from the x, y, and z axes
+     */
     public double[][] getCoordinateCache() {
         return new double[0][];
     }
 
 
-
+    /**
+     * Microsoft-provided
+     * EventListener method for each time the accelerometer reports new data
+     */
     private BandAccelerometerEventListener mAccelerometerEventListener = new BandAccelerometerEventListener() {
         @Override
         public void onBandAccelerometerChanged(final BandAccelerometerEvent event) {
@@ -62,9 +81,9 @@ public class MSBandDataStream extends SensorDataStream {
     };
 
 
-    /*
+    /**
      * Microsoft-provided
-     * task to detect connection to the Band
+     * method to detect connection to the Band
      */
     private boolean getConnectedBandClient() throws InterruptedException, BandException {
         if (client == null) {
@@ -83,7 +102,7 @@ public class MSBandDataStream extends SensorDataStream {
     }
 
 
-    /*
+    /**
      * Microsoft-provided
      * task to connect to the Band
      */
