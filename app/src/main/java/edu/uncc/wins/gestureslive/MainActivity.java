@@ -35,6 +35,11 @@ public class MainActivity extends ActionBarActivity {
 
                 //Create the data stream
                 SensorDataStream MSStream = new MSBandDataStream();
+                /*
+                //Uncomment to use data from the csv File
+                SensorDataStream ExpStream = new ExperimentDataStream("raw128Length.csv");
+                */
+
                 //Build the rest of the chain-of-responsibility starting with the top link
                 GestureClassifier myClassifier = new GestureClassifier();
                 FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);

@@ -27,13 +27,13 @@ public class MSBandDataStream extends SensorDataStream {
 
 
     public MSBandDataStream(){
+        super();
         client = null;
     }
 
 
     public void startupStream() {
         new appTask().execute();
-        super.startupStream();
     }
 
 

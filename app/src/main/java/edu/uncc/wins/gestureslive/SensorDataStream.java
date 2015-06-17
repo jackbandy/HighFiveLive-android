@@ -10,12 +10,12 @@ import java.util.ArrayList;
  */
 
 public abstract class SensorDataStream {
-    private ArrayList<StreamListener> myListeners;
+    private ArrayList<StreamListener> myListeners = new ArrayList<StreamListener>();
 
     /**
-     * Starts up the stream of data
+     * Constructor
      */
-    public void startupStream(){
+    public SensorDataStream(){
         myListeners = new ArrayList<StreamListener>();
     }
 
@@ -36,6 +36,11 @@ public abstract class SensorDataStream {
         return myListeners;
     }
 
+
+    /**
+     * Begins the data stream's processes
+     */
+    abstract public void startupStream();
 
     /**
      * Ends the data stream's processes
