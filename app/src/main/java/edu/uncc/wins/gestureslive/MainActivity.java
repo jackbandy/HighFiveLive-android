@@ -1,6 +1,6 @@
 package edu.uncc.wins.gestureslive;
 
-import android.gesture.Gesture;
+import android.content.res.AssetManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,11 +34,12 @@ public class MainActivity extends ActionBarActivity implements StreamListener {
                  */
 
         //Create the data stream
-        final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
-        /*
+        //final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
+
         //Uncomment to use data from the csv File
-        SensorDataStream ExpStream = new ExperimentDataStream("raw128Length.csv");
-        */
+        AssetManager ast = getAssets();
+        final SensorDataStream MSStream = new ExperimentDataStream("raw128length", ast);
+
 
         //Build the rest of the chain-of-responsibility starting with the top link
         GestureClassifier myClassifier = new GestureClassifier();
