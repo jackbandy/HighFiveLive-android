@@ -7,48 +7,64 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements StreamListener {
 
     private Button goBtn;
+    private TextView txtView;
+    private Boolean isStreaming;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        isStreaming = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
         goBtn = (Button) findViewById(R.id.goBtn);
+        txtView = (TextView) findViewById(R.id.txtView);
+        /*
+                SensorDataStream (reports to...)
+                Segmentor (who listens to ^, and reports to...)
+                SegmentProcessor (who reports to...)
+                FeatureExtractor (who reports to...)
+                GestureClassifier (who notifies the world)
+                 */
+
+        //Create the data stream
+        final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
+        /*
+        //Uncomment to use data from the csv File
+        SensorDataStream ExpStream = new ExperimentDataStream("raw128Length.csv");
+        */
+
+        //Build the rest of the chain-of-responsibility starting with the top link
+        GestureClassifier myClassifier = new GestureClassifier();
+        FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
+        SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
+        //Create a segmentor that listens to the stream and reports to the processor
+        Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
+
+        MSStream.addListener(mySegmentor);
+        MSStream.addListener(this);
+
         goBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("GO!");
-
-
-                /*
-                SensorDataStream (who reports to...)
-                Segmentor (who listens to ^, reports to...)
-                SegmentProcessor (who reports to...)
-                FeatureExtractor (who reports to...)
-                GestureClassifier (who reports to nobody)
-                 */
-
-                //Create the data stream
-                SensorDataStream MSStream = new MSBandDataStream();
-                /*
-                //Uncomment to use data from the csv File
-                SensorDataStream ExpStream = new ExperimentDataStream("raw128Length.csv");
-                */
-
-                //Build the rest of the chain-of-responsibility starting with the top link
-                GestureClassifier myClassifier = new GestureClassifier();
-                FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
-                SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
-                //Create a segmentor that listens to the stream and reports to the processor
-                Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
-
-                //Start tracking the data
-                MSStream.startupStream();
+                if(isStreaming) {
+                    isStreaming = false;
+                    MSStream.terminateStream();
+                    goBtn.setText("GO");
+                }
+                else {
+                    isStreaming = true;
+                    System.out.println("GO!");
+                    //Start tracking the data
+                    MSStream.startupStream();
+                    goBtn.setText("STOP");
+                }
             }
         });
 
@@ -61,6 +77,7 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -75,5 +92,16 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void newSensorData(Coordinate newCoordinate) {
+        final String toPrint = newCoordinate.toString();
+        //System.out.print(toPrint);
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                txtView.setText(toPrint);
+            }
+        });
     }
 }

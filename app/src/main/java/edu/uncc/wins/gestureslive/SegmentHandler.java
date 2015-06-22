@@ -27,10 +27,9 @@ public abstract class SegmentHandler {
 
     /**
      * Accept the segment from a Segmentor which was subscribed to
-     * @param segmentPoints a 3-item array, whose items are coordinate ArrayLists of the segment
-     *                      e.g. [ArrayList X Acc, ArrayList Y Acc, ArrayList Z Acc]
+     * @param segmentPoints an ArrayList of coordinates spanning the gesture
      *
      * @param featureVector an array of the extracted features of the segment, if they exist
      */
-    abstract void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] featureVector);
+    abstract void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector);
 }

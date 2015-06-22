@@ -52,6 +52,6 @@ public abstract class SensorDataStream {
      * Provides cache of recent data points for further analysis
      * @return a double array with the 64 most recent data points
      */
-    abstract public double[][] getCoordinateCache();
+    abstract public ArrayList<Coordinate> getCoordinateCache();
 
 }

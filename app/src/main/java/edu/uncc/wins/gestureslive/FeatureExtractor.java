@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * The second-highest class in the segment handler chain of responsibility:
- * A wrapper class for using feature extraction libraries
+ * A wrapper class for u sing feature extraction libraries
  * before this link, segmentFeatures will be null,
  * this link extracts features for use with handlers up the chain
  *
@@ -15,11 +15,11 @@ public class FeatureExtractor extends SegmentHandler {
         super(nextHandler);
     }
 
-
-    void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] featureVector) {
+    void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         //extract the features!
         //when handling from this link up, a feature vector will be included
         Double[] tmp = new Double[2];
         myNextHandler.handleNewSegment(segmentPoints, tmp);
     }
+
 }

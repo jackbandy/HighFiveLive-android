@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  * A data stream to provide accelerometer data from the scripted gestures,
@@ -37,7 +38,7 @@ public class ExperimentDataStream extends SensorDataStream {
                 double accY = Double.parseDouble(RowData[1]);
                 double accZ = Double.parseDouble(RowData[2]);
 
-                double[] toPass = new double[]{accX,accY,accZ};
+                Coordinate toPass = new Coordinate(accX,accY,accZ);
                 for(StreamListener myListener: getMyListeners()){
                     myListener.newSensorData(toPass);
                 }
@@ -62,7 +63,7 @@ public class ExperimentDataStream extends SensorDataStream {
         isStreaming = false;
     }
 
-    public double[][] getCoordinateCache() {
-        return new double[0][];
+    public ArrayList<Coordinate> getCoordinateCache() {
+        return new ArrayList<Coordinate>();
     }
 }

@@ -22,7 +22,7 @@ public class SegmentProcessor extends SegmentHandler {
      * Do something with the raw segment data
      * @param segmentPoints a 3-item array, whose items are all the coordinates of the segment
      */
-    void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] featureVector) {
+    void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         //process the data, features not yet extracted at this point
         myNextHandler.handleNewSegment(segmentPoints, null);
     }

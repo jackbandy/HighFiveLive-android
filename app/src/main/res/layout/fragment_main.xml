@@ -11,4 +11,15 @@
         android:layout_height="wrap_content"
         android:text="Go!" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/txtView"
+        android:layout_alignRight="@+id/goBtn"
+        android:layout_alignEnd="@+id/goBtn"
+        android:layout_below="@+id/goBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

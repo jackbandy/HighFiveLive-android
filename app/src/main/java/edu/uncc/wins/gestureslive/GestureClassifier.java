@@ -25,7 +25,7 @@ public class GestureClassifier extends SegmentHandler {
      *
      * @param featureVector an array of the extracted features of the segment, if they exist
      */
-    void handleNewSegment(ArrayList<Double>[] segmentPoints, Double[] featureVector) {
+    void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         assert featureVector != null;
         //classify the segment and let the world know about it
     }
