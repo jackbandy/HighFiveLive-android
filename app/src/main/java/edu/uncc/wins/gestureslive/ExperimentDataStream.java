@@ -3,11 +3,18 @@ package edu.uncc.wins.gestureslive;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A data stream to provide accelerometer data from the scripted gestures,
@@ -19,16 +26,18 @@ public class ExperimentDataStream extends SensorDataStream {
 
     private boolean isStreaming;
     private String myFileName;
+    private ScheduledExecutorService service;
     AssetManager myManager;
+    ArrayList<String> theDoubles;
 
 
-    public ExperimentDataStream(String aFileName, AssetManager aManager){
+    public ExperimentDataStream(String aFileName, AssetManager aManager) {
         super();
         this.myFileName = aFileName;
         myManager = aManager;
     }
 
-    private class readTask extends AsyncTask<Void,Void,Void>{
+    private class readTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -44,12 +53,15 @@ public class ExperimentDataStream extends SensorDataStream {
                 System.out.println("doing while");
 
                 while (isStreaming && (line = reader.readLine()) != null) {
-                    System.out.println("parsing");
+                    //System.out.println("parsing");
 
-                    String[] RowData = line.split(",");
-                    final double accX = Double.parseDouble(RowData[0]);
-                    final double accY = Double.parseDouble(RowData[1]);
-                    final double accZ = Double.parseDouble(RowData[2]);
+                    StringTokenizer myTknizer = new StringTokenizer(line, ",");
+                    //String[] RowData = line.split(",");
+
+                    final double accX = Double.parseDouble(myTknizer.nextElement().toString());
+                    final double accY = Double.parseDouble(myTknizer.nextElement().toString());
+                    final double accZ = Double.parseDouble(myTknizer.nextElement().toString());
+                    System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
 
                     Coordinate toPass = new Coordinate(accX, accY, accZ);
                     for (StreamListener myListener : getMyListeners()) {
@@ -59,20 +71,14 @@ public class ExperimentDataStream extends SensorDataStream {
                     System.out.println("sleeping");
                     //Delay the next point by 20ms and 0ns to match the 20Hz used in experiment
 
-                    final Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            handler.postDelayed(this, 1000);
-                        }
-                    });
+                    Thread.sleep(100);
 
                 }
 
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println("2Boohoo\n" + ex.toString());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -81,12 +87,52 @@ public class ExperimentDataStream extends SensorDataStream {
 
     public void startupStream() {
         isStreaming = true;
-        new readTask().doInBackground();
+
+        BufferedReader reader = null;
+        theDoubles = new ArrayList<String>();
+        String line;
+        try {
+            reader = new BufferedReader(new InputStreamReader(myManager.open(myFileName)));
+            while ((line = reader.readLine()) != null) {
+                theDoubles.addAll(Arrays.asList(line.split(",")));
+            }
+            Log.v("ME","Count: " + theDoubles.size());
+        } catch (IOException e) {
+            Log.v("EXC", e.toString());
+            e.printStackTrace();
+        }
+
+        service = Executors.newSingleThreadScheduledExecutor();
+        DataStreamTask myTask = new DataStreamTask();
+        service.scheduleWithFixedDelay(myTask, 0, 20, TimeUnit.MILLISECONDS);
+
+
+    }
+
+    private class DataStreamTask implements Runnable {
+        private int count;
+
+        public DataStreamTask(){
+            count = 0;
+        }
+
+        @Override
+        public void run() {
+            final double accX = Double.parseDouble(theDoubles.get(count++));
+            final double accY = Double.parseDouble(theDoubles.get(count++));
+            final double accZ = Double.parseDouble(theDoubles.get(count++));
+            System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
+
+            Coordinate toPass = new Coordinate(accX, accY, accZ);
+            for (StreamListener myListener : getMyListeners()) {
+                myListener.newSensorData(toPass);
+            }
+        }
     }
 
 
-
     public void terminateStream() {
+        service.shutdownNow();
         isStreaming = false;
     }
 
