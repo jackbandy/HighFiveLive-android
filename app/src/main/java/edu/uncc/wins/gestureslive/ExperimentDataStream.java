@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,7 +30,7 @@ public class ExperimentDataStream extends SensorDataStream {
     private ScheduledExecutorService service;
     AssetManager myManager;
     ArrayList<String> theDoubles;
-
+    BufferedReader reader;
 
     public ExperimentDataStream(String aFileName, AssetManager aManager) {
         super();
@@ -88,15 +89,15 @@ public class ExperimentDataStream extends SensorDataStream {
     public void startupStream() {
         isStreaming = true;
 
-        BufferedReader reader = null;
+        reader = null;
         theDoubles = new ArrayList<String>();
         String line;
         try {
             reader = new BufferedReader(new InputStreamReader(myManager.open(myFileName)));
-            while ((line = reader.readLine()) != null) {
-                theDoubles.addAll(Arrays.asList(line.split(",")));
-            }
-            Log.v("ME","Count: " + theDoubles.size());
+            /*while ((line = reader.readLine()) != null) {
+                theDoubles.addAll(Arrays.asList(line.split(",")).subList(1,3));
+            }*/
+            Log.v("ME", "Count: " + theDoubles.size());
         } catch (IOException e) {
             Log.v("EXC", e.toString());
             e.printStackTrace();
@@ -118,11 +119,24 @@ public class ExperimentDataStream extends SensorDataStream {
 
         @Override
         public void run() {
+            String line = "";
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            List<String> theDoubles = Arrays.asList(line.split(","));
+            final double accX = Double.parseDouble(theDoubles.get(1));
+            final double accY = Double.parseDouble(theDoubles.get(2));
+            final double accZ = Double.parseDouble(theDoubles.get(3));
+            /*
             final double accX = Double.parseDouble(theDoubles.get(count++));
             final double accY = Double.parseDouble(theDoubles.get(count++));
             final double accZ = Double.parseDouble(theDoubles.get(count++));
-            System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
 
+            System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
+            */
             Coordinate toPass = new Coordinate(accX, accY, accZ);
             for (StreamListener myListener : getMyListeners()) {
                 myListener.newSensorData(toPass);

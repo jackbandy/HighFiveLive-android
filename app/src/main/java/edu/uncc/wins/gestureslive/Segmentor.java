@@ -64,6 +64,8 @@ public class Segmentor implements StreamListener {
                 Log.v("TAG", "STARTED segmenting");
             }
         }
+
+
         else {
             windowCount++;
             if (windowCount > 16){

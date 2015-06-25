@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity implements StreamListener {
+public class MainActivity extends ActionBarActivity implements StreamListener{
 
     private Button goBtn;
     private TextView txtView;
@@ -38,7 +38,9 @@ public class MainActivity extends ActionBarActivity implements StreamListener {
 
         //Uncomment to use data from the csv File
         AssetManager ast = getAssets();
-        final SensorDataStream MSStream = new ExperimentDataStream("raw128length", ast);
+        //final SensorDataStream MSStream = new ExperimentDataStream("raw128length", ast);
+        final SensorDataStream MSStream = new ExperimentDataStream("trial0.csv", ast);
+
 
 
         //Build the rest of the chain-of-responsibility starting with the top link
