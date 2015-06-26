@@ -47,8 +47,11 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
         GestureClassifier myClassifier = new GestureClassifier();
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
+
         //Create a segmentor that listens to the stream and reports to the processor
-        Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
+        //Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
+        IntegralSegmentor mySegmentor = new IntegralSegmentor(MSStream, myProcessor);
+
 
         MSStream.addListener(mySegmentor);
         MSStream.addListener(this);

@@ -2,23 +2,27 @@ package edu.uncc.wins.gestureslive;
 
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Arrays;
 
 /**
  * Concrete class for listening to a SensorDataStream and outputting segments
  * Employs the observer design pattern as a listener,
  * also begins the chain-of-responsibility
  *
+ * IntegralSegmentor will segment gestures by integrating the acceleration functions,
+ * and chopping them once the value of that integration returns to zero
+ *
  * Created by jbandy3 on 6/16/2015.
  */
 
-public class Segmentor implements StreamListener {
+public class IntegralSegmentor implements StreamListener {
     private SegmentHandler nextHandler;
     private SensorDataStream myStream;
     private ArrayList<Coordinate> segmentCoordinates;
+    private ArrayList<Double> trapezoidAreas;
+    private double trapezoidSum;
+
     private int windowCount;
     private long totalCount;
     private boolean isSegmenting;
@@ -28,13 +32,15 @@ public class Segmentor implements StreamListener {
      * @param aStream the stream to listen to
      * @param aHandler the first handler in the Segment chain
      */
-    public Segmentor(SensorDataStream aStream, SegmentHandler aHandler){
+    public IntegralSegmentor(SensorDataStream aStream, SegmentHandler aHandler){
         myStream = aStream;
         nextHandler = aHandler;
         windowCount = 0;
         totalCount = 0;
+        trapezoidSum = 0;
         isSegmenting = false;
         segmentCoordinates = new ArrayList<Coordinate>(16);
+        trapezoidAreas = new ArrayList<Double>();
     }
 
 
@@ -85,17 +91,29 @@ public class Segmentor implements StreamListener {
                 Log.v("TAG", "STOPPED segmenting");
                 windowCount = 0;
                 segmentCoordinates.clear();
+                trapezoidAreas.clear();
+                trapezoidSum = 0;
                 isSegmenting = false;
             }
             else if(windowCount % 16 == 0){
-                //System.out.println("Stdev: " + stdDev(segmentCoordinates));
-                Log.v("TAG", "Stdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
-                if(stdDev(segmentCoordinates) < .1){
+
+                double xwidth = 16;
+                Double[] current = newCoordinate.toArray();
+                Double[] previous = segmentCoordinates.get(14).toArray();
+                double average = ((current[0]+current[1]+current[2]) - (previous[0]+previous[1]+previous[2])) / 2;
+                //Log.v("TAG", "x1: " + newCoordinate.toArray()[0] + "\taverage: " + average);
+                Log.v("TAG", "xwidth: " + xwidth + "\taverage: " + average);
+                trapezoidSum += average*xwidth;
+                Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
+
+
+                if(stdDev(segmentCoordinates) < .05){
                     //end the segment if the stdev has leveled off
                     Log.v("TAG", "STOPPED segmenting");
-
                     windowCount = 0;
                     segmentCoordinates.clear();
+                    trapezoidAreas.clear();
+                    trapezoidSum = 0;
                     isSegmenting = false;
                 }
             }
