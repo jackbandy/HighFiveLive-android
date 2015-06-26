@@ -9,6 +9,7 @@ import com.microsoft.band.BandException;
 import com.microsoft.band.BandIOException;
 import com.microsoft.band.BandInfo;
 import com.microsoft.band.ConnectionState;
+import com.microsoft.band.notifications.VibrationType;
 import com.microsoft.band.sensors.BandAccelerometerEvent;
 import com.microsoft.band.sensors.BandAccelerometerEventListener;
 import com.microsoft.band.sensors.SampleRate;
@@ -165,4 +166,22 @@ public class MSBandDataStream extends SensorDataStream {
             return null;
         }
     }
+
+
+    public void vibrateBandOnce(){
+        try {
+            client.getNotificationManager().vibrate(VibrationType.NOTIFICATION_ONE_TONE);
+        } catch (BandIOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void vibrateBandTwice(){
+        try {
+            client.getNotificationManager().vibrate(VibrationType.NOTIFICATION_TWO_TONE);
+        } catch (BandIOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

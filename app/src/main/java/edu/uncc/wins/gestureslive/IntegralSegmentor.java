@@ -2,6 +2,8 @@ package edu.uncc.wins.gestureslive;
 
 import android.util.Log;
 
+import com.microsoft.band.BandClient;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,6 +29,8 @@ public class IntegralSegmentor implements StreamListener {
     private long totalCount;
     private boolean isSegmenting;
 
+    private MSBandDataStream myBand;
+
     /**
      * Perfunctory constructor.
      * @param aStream the stream to listen to
@@ -41,6 +45,12 @@ public class IntegralSegmentor implements StreamListener {
         isSegmenting = false;
         segmentCoordinates = new ArrayList<Coordinate>(16);
         trapezoidAreas = new ArrayList<Double>();
+        myBand = null;
+    }
+
+    public IntegralSegmentor(MSBandDataStream aBand, SensorDataStream aStream, SegmentHandler aHandler){
+        this(aStream,aHandler);
+        myBand = aBand;
     }
 
 
@@ -66,10 +76,8 @@ public class IntegralSegmentor implements StreamListener {
         totalCount++;
         if(!isSegmenting){
             //Not currently tracking a gesture, start tracking if threshold is crossed
-            if(newCoordinate.getMagnitude() > 1.5) {
-                isSegmenting = true;
-                //System.out.println("STARTED segmenting");
-                Log.v("TAG", "STARTED segmenting");
+            if(newCoordinate.getMagnitude() > 1.3) {
+                this.onsetDidOccur();
             }
         }
 
@@ -87,16 +95,11 @@ public class IntegralSegmentor implements StreamListener {
                 segmentCoordinates.add(newCoordinate);
             }
 
-            if(windowCount % 128 == 0){
-                Log.v("TAG", "STOPPED segmenting");
-                windowCount = 0;
-                segmentCoordinates.clear();
-                trapezoidAreas.clear();
-                trapezoidSum = 0;
-                isSegmenting = false;
+            if(windowCount % 192 == 0){
+                this.offsetDidOccur();
             }
-            else if(windowCount % 16 == 0){
 
+            else if(windowCount % 16 == 0){
                 double xwidth = 16;
                 Double[] current = newCoordinate.toArray();
                 Double[] previous = segmentCoordinates.get(14).toArray();
@@ -107,14 +110,9 @@ public class IntegralSegmentor implements StreamListener {
                 Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
 
 
-                if(stdDev(segmentCoordinates) < .05){
+                if(stdDev(segmentCoordinates) < .05 && windowCount > 64){
                     //end the segment if the stdev has leveled off
-                    Log.v("TAG", "STOPPED segmenting");
-                    windowCount = 0;
-                    segmentCoordinates.clear();
-                    trapezoidAreas.clear();
-                    trapezoidSum = 0;
-                    isSegmenting = false;
+                    this.offsetDidOccur();
                 }
             }
         }
@@ -124,13 +122,35 @@ public class IntegralSegmentor implements StreamListener {
 
 
 
+
+
+    }
+
+
+    private void onsetDidOccur(){
+        isSegmenting = true;
+        Log.v("TAG", "STARTED segmenting");
+
+        if(myBand != null) myBand.vibrateBandTwice();
+    }
+
+
+    private void offsetDidOccur(){
+        Log.v("TAG", "STOPPED segmenting");
+        windowCount = 0;
+        segmentCoordinates.clear();
+        trapezoidAreas.clear();
+        trapezoidSum = 0;
+        isSegmenting = false;
+
+        if(myBand != null) myBand.vibrateBandOnce();
+
         /*
          * Skeleton for chain-of-responsibility design pattern
         if(produces new segment){
             nextHandler.handleNewSegment(ArrayList<Double>, Double[] featureVector);
         }
         */
-
     }
 
 

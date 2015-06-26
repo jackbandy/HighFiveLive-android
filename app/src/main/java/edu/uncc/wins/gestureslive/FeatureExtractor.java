@@ -3,6 +3,9 @@ package edu.uncc.wins.gestureslive;
 import java.util.ArrayList;
 import org.apache.commons.math3.stat.*;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
 
 /**
  * The second-highest class in the segment handler chain of responsibility:
@@ -39,6 +42,12 @@ public class FeatureExtractor extends SegmentHandler {
 
         //from here, it's as easy as
         double xSkew = xStats.getSkewness();
+
+
+        //Sample Fourier Transform:
+        FastFourierTransformer xFour = new FastFourierTransformer(DftNormalization.STANDARD);
+        xFour.transform(xArray, TransformType.FORWARD);
+
 
         //when handling from this link up, a feature vector will be included
         Double[] features = new Double[2];
