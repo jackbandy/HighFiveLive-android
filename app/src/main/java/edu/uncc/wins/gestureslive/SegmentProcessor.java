@@ -1,5 +1,7 @@
 package edu.uncc.wins.gestureslive;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -25,6 +27,8 @@ public class SegmentProcessor extends SegmentHandler {
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         //process the data, features not yet extracted at this point
         myNextHandler.handleNewSegment(segmentPoints, null);
+        Log.v("TAG", "pushed to handler from preprocessor");
+
     }
 
 }

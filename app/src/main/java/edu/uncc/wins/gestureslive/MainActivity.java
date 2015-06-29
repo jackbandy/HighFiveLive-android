@@ -31,15 +31,15 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
                 GestureClassifier (who notifies the world)
-                 */
+        */
 
         //Create the data stream
-        final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
+        //final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
 
         //Uncomment to use data from the csv File
         AssetManager ast = getAssets();
         //final SensorDataStream MSStream = new ExperimentDataStream("raw128length", ast);
-        //final SensorDataStream MSStream = new ExperimentDataStream("trial0.csv", ast);
+        final SensorDataStream MSStream = new ExperimentDataStream("trial0.csv", ast);
 
 
 
@@ -49,14 +49,14 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
         //Create a segmentor that listens to the stream and reports to the processor
-        //Segmentor mySegmentor = new Segmentor(MSStream, myProcessor);
+        SegmentorFromAnnotation annotationSegmentor = new SegmentorFromAnnotation(MSStream, myProcessor);
 
         //Custom constructor to pass MSBand for haptic feedback
-        IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) MSStream, MSStream, myProcessor);
+        //IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) MSStream, MSStream, myProcessor);
 
-
-        MSStream.addListener(mySegmentor);
+        MSStream.addListener(annotationSegmentor);
         MSStream.addListener(this);
+
 
         goBtn.setOnClickListener(new View.OnClickListener() {
             @Override

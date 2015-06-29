@@ -30,12 +30,16 @@ public class ExperimentDataStream extends SensorDataStream {
     private ScheduledExecutorService service;
     AssetManager myManager;
     ArrayList<String> theDoubles;
+    private ArrayList<Coordinate> myCache;
     BufferedReader reader;
+    private int size;
 
     public ExperimentDataStream(String aFileName, AssetManager aManager) {
         super();
         this.myFileName = aFileName;
         myManager = aManager;
+        myCache = new ArrayList<Coordinate>();
+        size = 0;
     }
 
     private class readTask extends AsyncTask<Void, Void, Void> {
@@ -138,6 +142,7 @@ public class ExperimentDataStream extends SensorDataStream {
             System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
             */
             Coordinate toPass = new Coordinate(accX, accY, accZ);
+            myCache.add(size++,toPass);
             for (StreamListener myListener : getMyListeners()) {
                 myListener.newSensorData(toPass);
             }
@@ -151,6 +156,6 @@ public class ExperimentDataStream extends SensorDataStream {
     }
 
     public ArrayList<Coordinate> getCoordinateCache() {
-        return new ArrayList<Coordinate>();
+        return (ArrayList<Coordinate>) myCache.subList(size-128,size);
     }
 }
