@@ -34,4 +34,7 @@ public class GestureClassifier extends SegmentHandler {
         //classify the segment and let the world know about it
 
     }
+
+
+
 }

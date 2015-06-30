@@ -10,6 +10,9 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+import edu.uncc.wins.gestureslive.Features.MeanCrossingRate;
+import edu.uncc.wins.gestureslive.Features.ZeroCrossingRate;
+
 /**
  * The second-highest class in the segment handler chain of responsibility:
  * A wrapper class for u sing feature extraction libraries
@@ -76,7 +79,12 @@ public class FeatureExtractor extends SegmentHandler {
         /*TODO*/
 
         //zero crossing rate
-        /*TODO*/
+        ZeroCrossingRate xRate = new ZeroCrossingRate(xArray,128);
+        xFeatures.add(xCount++,xRate.evaluate());
+        ZeroCrossingRate yRate = new ZeroCrossingRate(yArray,128);
+        yFeatures.add(yCount++,yRate.evaluate());
+        ZeroCrossingRate zRate = new ZeroCrossingRate(zArray,128);
+        zFeatures.add(zCount++,zRate.evaluate());
 
         //skew
         xFeatures.add(xCount++,xStats.getSkewness());
@@ -94,7 +102,12 @@ public class FeatureExtractor extends SegmentHandler {
         zFeatures.add(zCount++,zStats.getSkewness());
 
         //mean crossing rate
-        /*TODO*/
+        MeanCrossingRate xRateMean = new MeanCrossingRate(xArray,128,xStats.getMean());
+        xFeatures.add(xCount++,xRateMean.evaluate());
+        MeanCrossingRate yRateMean = new MeanCrossingRate(yArray,128,yStats.getMean());
+        yFeatures.add(yCount++,yRateMean.evaluate());
+        MeanCrossingRate zRateMean = new MeanCrossingRate(zArray,128,zStats.getMean());
+        zFeatures.add(zCount++,zRateMean.evaluate());
 
         //trapezoidal sum
         /*TODO*/
@@ -112,6 +125,9 @@ public class FeatureExtractor extends SegmentHandler {
 
         Log.v("TAG", "reached feature extractor 4");
 
+
+
+
         //when handling from this link up, a feature vector will be included
         ArrayList<Double> allFeatures = new ArrayList<>(xCount+yCount+zCount);
         allFeatures.addAll(xFeatures);
@@ -123,8 +139,6 @@ public class FeatureExtractor extends SegmentHandler {
         Double[] toPass = new Double[xCount+yCount+zCount];
         for(int i = 0; i < toPass.length; i++)
             toPass[i] = allFeatures.get(i);
-
-
 
         myNextHandler.handleNewSegment(segmentPoints, toPass);
         Log.v("TAG", "pushing to classifier from extractor");

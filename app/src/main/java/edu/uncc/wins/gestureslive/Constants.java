@@ -4,6 +4,9 @@ package edu.uncc.wins.gestureslive;
  * Created by jbandy3 on 6/29/2015.
  */
 public class Constants {
+    public static final double[] HighFiveCoeff = {};
+
+
         public static final int[] trial0StartPoints = {2070,
             2304,
             2538,
