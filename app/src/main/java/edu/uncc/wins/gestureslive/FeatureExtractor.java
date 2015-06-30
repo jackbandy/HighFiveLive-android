@@ -27,45 +27,49 @@ public class FeatureExtractor extends SegmentHandler {
         Log.v("TAG", "reached feature extractor");
 
         //extract the features!
-        Coordinate[] tmp = (Coordinate[]) segmentPoints.toArray();
+        int numberOfPoints = segmentPoints.size();
+
         ArrayList<Double> xFeatures = new ArrayList<Double>();
-        double[] xArray = new double[tmp.length];
+        double[] xArray = new double[numberOfPoints];
         int xCount = 0;
         ArrayList<Double> yFeatures = new ArrayList<Double>();
-        double[] yArray = new double[tmp.length];
+        double[] yArray = new double[numberOfPoints];
         int yCount = 0;
         ArrayList<Double> zFeatures = new ArrayList<Double>();
-        double[] zArray = new double[tmp.length];
+        double[] zArray = new double[numberOfPoints];
         int zCount = 0;
 
+        Log.v("TAG", "reached feature extractor 1");
+
         //extract raw doubles from the Coordinates
-        for(int index = 0; index < tmp.length; index++) {
-            Double[] retrieved = tmp[index].toArray();
+        for(int index = 0; index < numberOfPoints; index++) {
+            Double[] retrieved = segmentPoints.get(index).toArray();
             xArray[index] = retrieved[0];
             yArray[index] = retrieved[1];
             zArray[index] = retrieved[2];
         }
 
+        Log.v("TAG", "reached feature extractor 2");
         //Initialize a stats library for each axis
         DescriptiveStatistics xStats = new DescriptiveStatistics(xArray);
         DescriptiveStatistics yStats = new DescriptiveStatistics(yArray);
         DescriptiveStatistics zStats = new DescriptiveStatistics(zArray);
 
         //min,max,mean
-        xFeatures.add(xStats.getMin());
-        yFeatures.add(yStats.getMin());
-        zFeatures.add(zStats.getMin());
-        xFeatures.add(xStats.getMax());
-        yFeatures.add(yStats.getMax());
-        zFeatures.add(zStats.getMax());
-        xFeatures.add(xStats.getMean());
-        yFeatures.add(yStats.getMean());
-        zFeatures.add(zStats.getMean());
+        xFeatures.add(xCount++,xStats.getMin());
+        yFeatures.add(yCount++,yStats.getMin());
+        zFeatures.add(zCount++,zStats.getMin());
+        xFeatures.add(xCount++,xStats.getMax());
+        yFeatures.add(yCount++,yStats.getMax());
+        zFeatures.add(zCount++,zStats.getMax());
+        xFeatures.add(xCount++,xStats.getMean());
+        yFeatures.add(yCount++,yStats.getMean());
+        zFeatures.add(zCount++,zStats.getMean());
 
         //stdev
-        xFeatures.add(xStats.getStandardDeviation());
-        yFeatures.add(yStats.getStandardDeviation());
-        zFeatures.add(zStats.getStandardDeviation());
+        xFeatures.add(xCount++,xStats.getStandardDeviation());
+        yFeatures.add(yCount++,yStats.getStandardDeviation());
+        zFeatures.add(zCount++,zStats.getStandardDeviation());
 
         //pairwise correlation
         PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
@@ -75,19 +79,19 @@ public class FeatureExtractor extends SegmentHandler {
         /*TODO*/
 
         //skew
-        xFeatures.add(xStats.getSkewness());
-        yFeatures.add(yStats.getSkewness());
-        zFeatures.add(zStats.getSkewness());
+        xFeatures.add(xCount++,xStats.getSkewness());
+        yFeatures.add(yCount++,yStats.getSkewness());
+        zFeatures.add(zCount++,zStats.getSkewness());
 
         //kurtosis
-        xFeatures.add(xStats.getKurtosis());
-        yFeatures.add(yStats.getKurtosis());
-        zFeatures.add(zStats.getKurtosis());
+        xFeatures.add(xCount++,xStats.getKurtosis());
+        yFeatures.add(yCount++,yStats.getKurtosis());
+        zFeatures.add(zCount++,zStats.getKurtosis());
 
         //signal-to-noise ratio
-        xFeatures.add(xStats.getSkewness());
-        yFeatures.add(yStats.getSkewness());
-        zFeatures.add(zStats.getSkewness());
+        xFeatures.add(xCount++,xStats.getSkewness());
+        yFeatures.add(yCount++,yStats.getSkewness());
+        zFeatures.add(zCount++,zStats.getSkewness());
 
         //mean crossing rate
         /*TODO*/
@@ -101,19 +105,28 @@ public class FeatureExtractor extends SegmentHandler {
         //DFT coefficients
         /*TODO*/
 
-
+        Log.v("TAG", "reached feature extractor 3");
         //Sample Fourier Transform:
         FastFourierTransformer xFour = new FastFourierTransformer(DftNormalization.STANDARD);
         xFour.transform(xArray, TransformType.FORWARD);
 
+        Log.v("TAG", "reached feature extractor 4");
 
         //when handling from this link up, a feature vector will be included
-        ArrayList<Double> allFeatures = new ArrayList<>(xArray.length+yArray.length+zArray.length);
+        ArrayList<Double> allFeatures = new ArrayList<>(xCount+yCount+zCount);
         allFeatures.addAll(xFeatures);
         allFeatures.addAll(yFeatures);
         allFeatures.addAll(zFeatures);
 
-        myNextHandler.handleNewSegment(segmentPoints, (Double[]) allFeatures.toArray());
+        Log.v("TAG", "reached feature extractor 5");
+
+        Double[] toPass = new Double[xCount+yCount+zCount];
+        for(int i = 0; i < toPass.length; i++)
+            toPass[i] = allFeatures.get(i);
+
+
+
+        myNextHandler.handleNewSegment(segmentPoints, toPass);
         Log.v("TAG", "pushing to classifier from extractor");
     }
 

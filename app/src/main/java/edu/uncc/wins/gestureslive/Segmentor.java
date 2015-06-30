@@ -93,7 +93,6 @@ public class Segmentor implements StreamListener {
                 if(stdDev(segmentCoordinates) < .1){
                     //end the segment if the stdev has leveled off
                     Log.v("TAG", "STOPPED segmenting");
-
                     windowCount = 0;
                     segmentCoordinates.clear();
                     isSegmenting = false;

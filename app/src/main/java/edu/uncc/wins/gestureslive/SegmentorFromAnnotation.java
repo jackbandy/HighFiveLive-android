@@ -39,23 +39,12 @@ public class SegmentorFromAnnotation implements StreamListener {
         isSegmenting = false;
 
         annotatedStarts = new ArrayList<Integer>();
+        segmentCoordinates = new ArrayList<Coordinate>();
         for(int i = 0; i < Constants.trial0StartPoints.length; i++){
-            annotatedStarts.add(Constants.trial0StartPoints[i]);
+            annotatedStarts.add(i,Constants.trial0StartPoints[i]);
         }
-    }
+        Log.v("TAG", "SUCCESS segmentor constructed with arraylist");
 
-
-    public double stdDev(ArrayList<Coordinate> aWindow){
-
-        //Standard deviation loop from StackOverflow
-        double powerSum1 = 0;
-        double powerSum2 = 0;
-
-        for (Coordinate c: aWindow) {
-            powerSum1 += c.getMagnitude();
-            powerSum2 += Math.pow(c.getMagnitude(), 2);
-        }
-        return Math.sqrt(aWindow.size()*powerSum2 - Math.pow(powerSum1, 2))/aWindow.size();
     }
 
 
@@ -70,24 +59,24 @@ public class SegmentorFromAnnotation implements StreamListener {
             //Not currently tracking a gesture, start tracking if threshold is crossed
             if(annotatedStarts.contains(totalCount)){
                 isSegmenting = true;
-                //System.out.println("STARTED segmenting");
+                segmentCoordinates.add(windowCount,newCoordinate);
                 Log.v("TAG", "STARTED segmenting");
-
             }
         }
 
-
         else {
             windowCount++;
+            segmentCoordinates.add(windowCount,newCoordinate);
+
             //Currently tracking a gesture,
-            if(windowCount == 128) {
+            if(windowCount == 127) {
                 //end it
                 Log.v("TAG", "STOPPED segmenting");
                 windowCount = 0;
-                segmentCoordinates.clear();
                 isSegmenting = false;
-                nextHandler.handleNewSegment(myStream.getCoordinateCache(),null);
-                Log.v("TAG", "STOPPED segmenting");
+                nextHandler.handleNewSegment(segmentCoordinates, null);
+                Log.v("TAG", "SUBMITTED segment");
+                segmentCoordinates.clear();
             }
         }
 

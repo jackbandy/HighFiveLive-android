@@ -3,6 +3,7 @@ package edu.uncc.wins.gestureslive;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The highest link in the segment handler chain of responsibility:
@@ -29,7 +30,7 @@ public class GestureClassifier extends SegmentHandler {
      */
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         assert featureVector != null;
-        Log.v("TAG", "Features: " + featureVector.toString());
+        Log.v("TAG", "Features: " + Arrays.toString(featureVector));
         //classify the segment and let the world know about it
 
     }
