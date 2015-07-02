@@ -19,42 +19,20 @@ package edu.uncc.wins.gestureslive.Features;
  */
 
 public class MeanCrossingRate {
-    private double[] signals;
-    private double lengthInPoints;
-    private double myMean;
 
-    /**
-     * Constructor
-     *
-     * @param signals       input signal array
-     * @param lengthInPoints        length of the signal (in points)
-     */
-    public MeanCrossingRate(double[] signals, double lengthInPoints, double aMean){
-        setSignals(signals,1);
-        myMean = aMean;
-    }
-
-    /**
-     * set the signals
-     *
-     * @param signals       input signal array
-     * @param lengthInSecond        length of the signal (in points)
-     */
-    public void setSignals(double[] signals, double lengthInSecond){
-        this.signals=signals;
-        this.lengthInPoints=lengthInSecond;
-    }
-
-    public double evaluate(){
+    public static double meanCrossingRate(double[] signals, double lengthInPoints, double aMean){
         int numZC=0;
         int size=signals.length;
 
+
         for (int i=0; i<size-1; i++){
-            if((signals[i]>=myMean && signals[i+1]<myMean) || (signals[i]<myMean && signals[i+1]>=myMean)){
+            if((signals[i]>=aMean && signals[i+1]<aMean) || (signals[i]<aMean && signals[i+1]>=aMean)){
                 numZC++;
             }
         }
 
         return numZC/lengthInPoints;
     }
+
+
 }

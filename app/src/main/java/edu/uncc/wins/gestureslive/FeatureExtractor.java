@@ -3,6 +3,9 @@ package edu.uncc.wins.gestureslive;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.stat.*;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -10,6 +13,7 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+import edu.uncc.wins.gestureslive.Features.FFTSignalEnergy;
 import edu.uncc.wins.gestureslive.Features.MeanCrossingRate;
 import edu.uncc.wins.gestureslive.Features.ZeroCrossingRate;
 
@@ -28,19 +32,18 @@ public class FeatureExtractor extends SegmentHandler {
 
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
         Log.v("TAG", "reached feature extractor");
-
         //extract the features!
-        int numberOfPoints = segmentPoints.size();
 
-        ArrayList<Double> xFeatures = new ArrayList<Double>();
+
+        ArrayList<Double> allFeatures = new ArrayList<Double>();
+        int featCount = 0;
+
+        //individual arrays to hold all the points
+        int numberOfPoints = segmentPoints.size();
         double[] xArray = new double[numberOfPoints];
-        int xCount = 0;
-        ArrayList<Double> yFeatures = new ArrayList<Double>();
         double[] yArray = new double[numberOfPoints];
-        int yCount = 0;
-        ArrayList<Double> zFeatures = new ArrayList<Double>();
         double[] zArray = new double[numberOfPoints];
-        int zCount = 0;
+
 
         Log.v("TAG", "reached feature extractor 1");
 
@@ -59,84 +62,68 @@ public class FeatureExtractor extends SegmentHandler {
         DescriptiveStatistics zStats = new DescriptiveStatistics(zArray);
 
         //min,max,mean
-        xFeatures.add(xCount++,xStats.getMin());
-        yFeatures.add(yCount++,yStats.getMin());
-        zFeatures.add(zCount++,zStats.getMin());
-        xFeatures.add(xCount++,xStats.getMax());
-        yFeatures.add(yCount++,yStats.getMax());
-        zFeatures.add(zCount++,zStats.getMax());
-        xFeatures.add(xCount++,xStats.getMean());
-        yFeatures.add(yCount++,yStats.getMean());
-        zFeatures.add(zCount++,zStats.getMean());
+        allFeatures.add(featCount++, xStats.getMin());
+        allFeatures.add(featCount++, yStats.getMin());
+        allFeatures.add(featCount++, zStats.getMin());
+        allFeatures.add(featCount++, xStats.getMax());
+        allFeatures.add(featCount++, yStats.getMax());
+        allFeatures.add(featCount++, zStats.getMax());
+        allFeatures.add(featCount++, xStats.getMean());
+        allFeatures.add(featCount++, yStats.getMean());
+        allFeatures.add(featCount++, zStats.getMean());
 
         //stdev
-        xFeatures.add(xCount++,xStats.getStandardDeviation());
-        yFeatures.add(yCount++,yStats.getStandardDeviation());
-        zFeatures.add(zCount++,zStats.getStandardDeviation());
+        allFeatures.add(featCount++, xStats.getStandardDeviation());
+        allFeatures.add(featCount++, yStats.getStandardDeviation());
+        allFeatures.add(featCount++, zStats.getStandardDeviation());
 
         //pairwise correlation
         PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
         /*TODO*/
 
         //zero crossing rate
-        ZeroCrossingRate xRate = new ZeroCrossingRate(xArray,128);
-        xFeatures.add(xCount++,xRate.evaluate());
-        ZeroCrossingRate yRate = new ZeroCrossingRate(yArray,128);
-        yFeatures.add(yCount++,yRate.evaluate());
-        ZeroCrossingRate zRate = new ZeroCrossingRate(zArray,128);
-        zFeatures.add(zCount++,zRate.evaluate());
-
+        allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(xArray,128));
+        allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(yArray, 128));
+        allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(zArray,128));
+        
         //skew
-        xFeatures.add(xCount++,xStats.getSkewness());
-        yFeatures.add(yCount++,yStats.getSkewness());
-        zFeatures.add(zCount++,zStats.getSkewness());
+        allFeatures.add(featCount++, xStats.getSkewness());
+        allFeatures.add(featCount++, yStats.getSkewness());
+        allFeatures.add(featCount++, zStats.getSkewness());
 
         //kurtosis
-        xFeatures.add(xCount++,xStats.getKurtosis());
-        yFeatures.add(yCount++,yStats.getKurtosis());
-        zFeatures.add(zCount++,zStats.getKurtosis());
+        allFeatures.add(featCount++, xStats.getKurtosis());
+        allFeatures.add(featCount++, yStats.getKurtosis());
+        allFeatures.add(featCount++, zStats.getKurtosis());
 
         //signal-to-noise ratio
-        xFeatures.add(xCount++,xStats.getSkewness());
-        yFeatures.add(yCount++,yStats.getSkewness());
-        zFeatures.add(zCount++,zStats.getSkewness());
+        allFeatures.add(featCount++, xStats.getSkewness());
+        allFeatures.add(featCount++, yStats.getSkewness());
+        allFeatures.add(featCount++, zStats.getSkewness());
 
         //mean crossing rate
-        MeanCrossingRate xRateMean = new MeanCrossingRate(xArray,128,xStats.getMean());
-        xFeatures.add(xCount++,xRateMean.evaluate());
-        MeanCrossingRate yRateMean = new MeanCrossingRate(yArray,128,yStats.getMean());
-        yFeatures.add(yCount++,yRateMean.evaluate());
-        MeanCrossingRate zRateMean = new MeanCrossingRate(zArray,128,zStats.getMean());
-        zFeatures.add(zCount++,zRateMean.evaluate());
+        allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(xArray,128,xStats.getMean()));
+        allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(yArray, 128, yStats.getMean()));
+        allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(zArray, 128, zStats.getMean()));
+
 
         //trapezoidal sum
         /*TODO*/
 
+
         //signal energy
-        /*TODO*/
+        allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(xArray));
+        allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(yArray));
+        allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(zArray));
+
+
 
         //DFT coefficients
         /*TODO*/
 
-        Log.v("TAG", "reached feature extractor 3");
-        //Sample Fourier Transform:
-        FastFourierTransformer xFour = new FastFourierTransformer(DftNormalization.STANDARD);
-        xFour.transform(xArray, TransformType.FORWARD);
-
-        Log.v("TAG", "reached feature extractor 4");
-
-
-
 
         //when handling from this link up, a feature vector will be included
-        ArrayList<Double> allFeatures = new ArrayList<>(xCount+yCount+zCount);
-        allFeatures.addAll(xFeatures);
-        allFeatures.addAll(yFeatures);
-        allFeatures.addAll(zFeatures);
-
-        Log.v("TAG", "reached feature extractor 5");
-
-        Double[] toPass = new Double[xCount+yCount+zCount];
+        Double[] toPass = new Double[featCount];
         for(int i = 0; i < toPass.length; i++)
             toPass[i] = allFeatures.get(i);
 

@@ -19,40 +19,17 @@ package edu.uncc.wins.gestureslive.Features;
  */
 
 public class ZeroCrossingRate {
-    private double[] signals;
-    private double lengthInPoints;
 
-    /**
-     * Constructor
-     *
-     * @param signals       input signal array
-     * @param lengthInPoints        length of the signal (in points)
-     */
-    public ZeroCrossingRate(double[] signals, double lengthInPoints){
-        setSignals(signals,1);
-    }
+    public static double zeroCrossingRate(double [] signals, double lengthInPoints) {
+        int numZC = 0;
+        int size = signals.length;
 
-    /**
-     * set the signals
-     *
-     * @param signals       input signal array
-     * @param lengthInPoints        length of the signal (in points)
-     */
-    public void setSignals(double[] signals, double lengthInPoints){
-        this.signals=signals;
-        this.lengthInPoints=lengthInPoints;
-    }
-
-    public double evaluate(){
-        int numZC=0;
-        int size=signals.length;
-
-        for (int i=0; i<size-1; i++){
-            if((signals[i]>=0 && signals[i+1]<0) || (signals[i]<0 && signals[i+1]>=0)){
+        for (int i = 0; i < size - 1; i++) {
+            if ((signals[i] >= 0 && signals[i + 1] < 0) || (signals[i] < 0 && signals[i + 1] >= 0)) {
                 numZC++;
             }
         }
 
-        return numZC/lengthInPoints;
+        return numZC / lengthInPoints;
     }
 }
