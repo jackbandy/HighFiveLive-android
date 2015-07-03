@@ -1,6 +1,8 @@
 package edu.uncc.wins.gestureslive;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.support.v7.app.ActionBarActivity;
@@ -22,6 +24,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     private Button dataBtn;
     private Button bandBtn;
     private TextView txtView;
+    private TextView featureLabel;
     private Boolean isStreaming;
     private SensorDataStream myStream;
 
@@ -38,6 +41,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         dataBtn = (Button) findViewById(R.id.dataBtn);
         bandBtn = (Button) findViewById(R.id.bandBtn);
         txtView = (TextView) findViewById(R.id.txtView);
+        featureLabel = (TextView) findViewById(R.id.featView);
 
 
         bandBtn.setOnClickListener(new View.OnClickListener() {
@@ -171,15 +175,24 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
     @Override
     public void newClassification(double[] featureVector, String classification) {
+        //final variables to be used in inner class
+        final String tmpClassification = classification;
+        final double[] tmpFeatureVector = featureVector;
         //Log.v("TAG","reached newClassification in mainActivity");
         if(!hasDialogue){
-            showAlertWithTitleAndMessage(classification, Arrays.toString(featureVector));
+            this.runOnUiThread(new Runnable() {
+                public void run() {
+                    showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
+                    featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
+                }
+            });
         }
     }
 
     private void showAlertWithTitleAndMessage(String title, String message){
         Log.v("TAG","reached showAlertWithTitleAndMessage in mainActivity");
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        AlertDialog.Builder myBuilder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = myBuilder.create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -192,6 +205,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         alertDialog.show();
         hasDialogue = true;
     }
+
 
 
 

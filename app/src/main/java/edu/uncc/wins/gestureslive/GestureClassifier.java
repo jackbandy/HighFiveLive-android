@@ -37,14 +37,13 @@ public class GestureClassifier extends SegmentHandler {
      * @param featureVector an array of the extracted features of the segment, if they exist
      */
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
-        assert featureVector != null;
+        //assert featureVector != null;
         Log.v("TAG", "Features: " + Arrays.toString(featureVector));
         //classify the segment and let the world know about it
 
 
         for(ClassificationListener aListener : myListeners){
-            Log.v("TAG", "added listener!");
-            aListener.newClassification(featureVector,"We made it!");
+            if(aListener != null) aListener.newClassification(featureVector,"We made it!");
         }
     }
 
