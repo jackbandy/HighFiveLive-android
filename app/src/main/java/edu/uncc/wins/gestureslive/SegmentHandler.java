@@ -31,5 +31,5 @@ public abstract class SegmentHandler {
      *
      * @param featureVector an array of the extracted features of the segment, if they exist
      */
-    abstract void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector);
+    abstract void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector);
 }

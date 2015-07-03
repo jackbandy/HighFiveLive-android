@@ -1,6 +1,11 @@
 package edu.uncc.wins.gestureslive;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.support.annotation.MainThread;
 import android.util.Log;
+
+import com.microsoft.band.notifications.VibrationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +18,14 @@ import java.util.Arrays;
  */
 public class GestureClassifier extends SegmentHandler {
 
+    private ArrayList<ClassificationListener> myListeners;
+
     /**
      * Constructor. Since this is the highest level in the chain, no handler is needed
      */
     public GestureClassifier() {
         super();
+        myListeners = new ArrayList<ClassificationListener>();
     }
 
     /**
@@ -28,13 +36,22 @@ public class GestureClassifier extends SegmentHandler {
      *
      * @param featureVector an array of the extracted features of the segment, if they exist
      */
-    void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
+    void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         assert featureVector != null;
         Log.v("TAG", "Features: " + Arrays.toString(featureVector));
         //classify the segment and let the world know about it
 
+
+        for(ClassificationListener aListener : myListeners){
+            Log.v("TAG", "added listener!");
+            aListener.newClassification(featureVector,"We made it!");
+        }
     }
 
+
+    public void addListener(ClassificationListener aListener){
+        myListeners.add(aListener);
+    }
 
 
 }

@@ -1,32 +1,90 @@
 package edu.uncc.wins.gestureslive;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.microsoft.band.notifications.VibrationType;
 
-public class MainActivity extends ActionBarActivity implements StreamListener{
+import java.util.Arrays;
 
-    private Button goBtn;
+
+public class MainActivity extends ActionBarActivity implements StreamListener, ClassificationListener {
+
+    private Button dataBtn;
+    private Button bandBtn;
     private TextView txtView;
     private Boolean isStreaming;
+    private SensorDataStream myStream;
+
+    private boolean hasDialogue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        hasDialogue = false;
         isStreaming = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        goBtn = (Button) findViewById(R.id.goBtn);
+        dataBtn = (Button) findViewById(R.id.dataBtn);
+        bandBtn = (Button) findViewById(R.id.bandBtn);
         txtView = (TextView) findViewById(R.id.txtView);
+
+
+        bandBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isStreaming) {
+                    isStreaming = false;
+                    myStream.terminateStream();
+                    bandBtn.setText("START MS Band stream");
+                    dataBtn.setEnabled(true);
+                } else {
+                    isStreaming = true;
+                    //Start tracking the data
+                    buildSystemForBand();
+                    myStream.startupStream();
+                    bandBtn.setText("STOP MS Band stream");
+                    dataBtn.setEnabled(false);
+                }
+            }
+        });
+
+
+        dataBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isStreaming) {
+                    isStreaming = false;
+                    myStream.terminateStream();
+                    dataBtn.setText("START csv file stream");
+                    bandBtn.setEnabled(true);
+                } else {
+                    isStreaming = true;
+                    //Start tracking the data
+                    buildSystemForCSV();
+                    myStream.startupStream();
+                    dataBtn.setText("STOP csv file stream");
+                    bandBtn.setEnabled(false);
+                }
+            }
+        });
+
+    }
+
+
+    public void buildSystemForBand(){
         /*
-                SensorDataStream (reports to...)
+                SensorDataStream from MSBand (reports to...)
                 Segmentor (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
@@ -34,14 +92,34 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
         */
 
         //Create the data stream
-        //final SensorDataStream MSStream = new MSBandDataStream(getApplicationContext());
+        myStream = new MSBandDataStream(getApplicationContext());
 
-        //Uncomment to use data from the csv File
+        //Build the rest of the chain-of-responsibility starting with the top link
+        GestureClassifier myClassifier = new GestureClassifier();
+        FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
+        SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
+
+        //Custom constructor to pass MSBand for haptic feedback
+        IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
+
+        myStream.addListener(mySegmentor);
+        myStream.addListener(this);
+    }
+
+
+
+
+    public void buildSystemForCSV(){
+        /*
+                SensorDataStream from csv file (reports to...)
+                Segmentor from annotation (who listens to ^, and reports to...)
+                SegmentProcessor (who reports to...)
+                FeatureExtractor (who reports to...)
+                GestureClassifier (who notifies the world)
+        */
+
         AssetManager ast = getAssets();
-        //final SensorDataStream MSStream = new ExperimentDataStream("raw128length", ast);
-        final SensorDataStream MSStream = new ExperimentDataStream("trial0.csv", ast);
-
-
+        myStream = new ExperimentDataStream("trial0.csv", ast);
 
         //Build the rest of the chain-of-responsibility starting with the top link
         GestureClassifier myClassifier = new GestureClassifier();
@@ -49,33 +127,11 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
         //Create a segmentor that listens to the stream and reports to the processor
-        SegmentorFromAnnotation annotationSegmentor = new SegmentorFromAnnotation(MSStream, myProcessor);
+        SegmentorFromAnnotation annotationSegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
 
-        //Custom constructor to pass MSBand for haptic feedback
-        //IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) MSStream, MSStream, myProcessor);
-
-        MSStream.addListener(annotationSegmentor);
-        MSStream.addListener(this);
-
-
-        goBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isStreaming) {
-                    isStreaming = false;
-                    MSStream.terminateStream();
-                    goBtn.setText("GO");
-                }
-                else {
-                    isStreaming = true;
-                    System.out.println("GO!");
-                    //Start tracking the data
-                    MSStream.startupStream();
-                    goBtn.setText("STOP");
-                }
-            }
-        });
-
+        myStream.addListener(annotationSegmentor);
+        myStream.addListener(this);
+        myClassifier.addListener(this);
     }
 
 
@@ -112,4 +168,31 @@ public class MainActivity extends ActionBarActivity implements StreamListener{
             }
         });
     }
+
+    @Override
+    public void newClassification(double[] featureVector, String classification) {
+        //Log.v("TAG","reached newClassification in mainActivity");
+        if(!hasDialogue){
+            showAlertWithTitleAndMessage(classification, Arrays.toString(featureVector));
+        }
+    }
+
+    private void showAlertWithTitleAndMessage(String title, String message){
+        Log.v("TAG","reached showAlertWithTitleAndMessage in mainActivity");
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        hasDialogue = false;
+                    }
+                });
+        alertDialog.show();
+        hasDialogue = true;
+    }
+
+
+
 }

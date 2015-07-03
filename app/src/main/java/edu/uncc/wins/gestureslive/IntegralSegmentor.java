@@ -19,6 +19,8 @@ import java.util.Arrays;
  */
 
 public class IntegralSegmentor implements StreamListener {
+    private final double MAGNITUDE_ONSET_THRESHOLD = 1.4;
+
     private SegmentHandler nextHandler;
     private SensorDataStream myStream;
     private ArrayList<Coordinate> segmentCoordinates;
@@ -48,6 +50,7 @@ public class IntegralSegmentor implements StreamListener {
         myBand = null;
     }
 
+
     public IntegralSegmentor(MSBandDataStream aBand, SensorDataStream aStream, SegmentHandler aHandler){
         this(aStream,aHandler);
         myBand = aBand;
@@ -76,7 +79,7 @@ public class IntegralSegmentor implements StreamListener {
         totalCount++;
         if(!isSegmenting){
             //Not currently tracking a gesture, start tracking if threshold is crossed
-            if(newCoordinate.getMagnitude() > 1.3) {
+            if(newCoordinate.getMagnitude() > MAGNITUDE_ONSET_THRESHOLD) {
                 this.onsetDidOccur();
             }
         }
@@ -105,9 +108,9 @@ public class IntegralSegmentor implements StreamListener {
                 Double[] previous = segmentCoordinates.get(14).toArray();
                 double average = ((current[0]+current[1]+current[2]) - (previous[0]+previous[1]+previous[2])) / 2;
                 //Log.v("TAG", "x1: " + newCoordinate.toArray()[0] + "\taverage: " + average);
-                Log.v("TAG", "xwidth: " + xwidth + "\taverage: " + average);
+                //Log.v("TAG", "xwidth: " + xwidth + "\taverage: " + average);
                 trapezoidSum += average*xwidth;
-                Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
+                //Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
 
 
                 if(stdDev(segmentCoordinates) < .05 && windowCount > 64){
@@ -119,10 +122,6 @@ public class IntegralSegmentor implements StreamListener {
 
         //to acquire the stream's cache of points, call this getter:
         //myStream.getCoordinateCache();
-
-
-
-
 
     }
 

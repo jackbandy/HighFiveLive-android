@@ -30,7 +30,8 @@ public class FeatureExtractor extends SegmentHandler {
         super(nextHandler);
     }
 
-    void handleNewSegment(ArrayList<Coordinate> segmentPoints, Double[] featureVector) {
+
+    void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         Log.v("TAG", "reached feature extractor");
         //extract the features!
 
@@ -78,14 +79,14 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, zStats.getStandardDeviation());
 
         //pairwise correlation
-        PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
         /*TODO*/
+        PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
 
         //zero crossing rate
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(xArray,128));
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(yArray, 128));
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(zArray,128));
-        
+
         //skew
         allFeatures.add(featCount++, xStats.getSkewness());
         allFeatures.add(featCount++, yStats.getSkewness());
@@ -102,7 +103,7 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, zStats.getSkewness());
 
         //mean crossing rate
-        allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(xArray,128,xStats.getMean()));
+        allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(xArray, 128, xStats.getMean()));
         allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(yArray, 128, yStats.getMean()));
         allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(zArray, 128, zStats.getMean()));
 
@@ -116,14 +117,12 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(yArray));
         allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(zArray));
 
-
-
         //DFT coefficients
         /*TODO*/
 
 
         //when handling from this link up, a feature vector will be included
-        Double[] toPass = new Double[featCount];
+        double[] toPass = new double[featCount];
         for(int i = 0; i < toPass.length; i++)
             toPass[i] = allFeatures.get(i);
 
