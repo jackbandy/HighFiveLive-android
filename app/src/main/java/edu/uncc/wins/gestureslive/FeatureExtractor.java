@@ -81,6 +81,13 @@ public class FeatureExtractor extends SegmentHandler {
         //pairwise correlation
         /*TODO*/
         PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
+        //PLACEHOLDER FOR TESTING
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
+
+
+
 
         //zero crossing rate
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(xArray,128));
@@ -98,9 +105,11 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, zStats.getKurtosis());
 
         //signal-to-noise ratio
-        allFeatures.add(featCount++, xStats.getSkewness());
-        allFeatures.add(featCount++, yStats.getSkewness());
-        allFeatures.add(featCount++, zStats.getSkewness());
+        /*TODO*/
+        //PLACEHOLDER FOR TESTING
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
 
         //mean crossing rate
         allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(xArray, 128, xStats.getMean()));
@@ -110,6 +119,11 @@ public class FeatureExtractor extends SegmentHandler {
 
         //trapezoidal sum
         /*TODO*/
+        //what step size to use?
+        //PLACEHOLDER FOR TESTING
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, 0.);
 
 
         //signal energy
@@ -117,11 +131,12 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(yArray));
         allFeatures.add(featCount++, FFTSignalEnergy.signalEnergyFromRawData(zArray));
 
+
         //DFT coefficients
         /*TODO*/
 
 
-        //when handling from this link up, a feature vector will be included
+        //when handling a segment from this link up, a feature vector will be included
         double[] toPass = new double[featCount];
         for(int i = 0; i < toPass.length; i++)
             toPass[i] = allFeatures.get(i);

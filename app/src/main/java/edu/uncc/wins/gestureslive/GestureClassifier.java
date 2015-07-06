@@ -10,6 +10,9 @@ import com.microsoft.band.notifications.VibrationType;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.bwaldvogel.liblinear.Feature;
+import de.bwaldvogel.liblinear.Problem;
+
 /**
  * The highest link in the segment handler chain of responsibility:
  * given a segment (which now includes a feature vector), classify it as a gesture
@@ -28,6 +31,7 @@ public class GestureClassifier extends SegmentHandler {
         myListeners = new ArrayList<ClassificationListener>();
     }
 
+
     /**
      * Handle the segment, which now includes a feature vector,
      * classify it as a gesture
@@ -42,9 +46,74 @@ public class GestureClassifier extends SegmentHandler {
         //classify the segment and let the world know about it
 
 
-        for(ClassificationListener aListener : myListeners){
-            if(aListener != null) aListener.newClassification(featureVector,"We made it!");
+        double[] costs = new double[12];
+        double logit;
+        //for each potential gesture
+        for(int j = 0; j < 12; j++){
+            logit = .0;
+            for (int i=0; i<featureVector.length;i++)  {
+                logit += Constants.MODEL[j][i] * featureVector[i];
+            }
+            costs[j] = sigmoid(logit);
         }
+
+        int minInd = 0;
+        for(int i = 0; i < costs.length; i++)
+            if(costs[i] < costs[minInd]) minInd = i;
+
+
+        for(ClassificationListener aListener : myListeners){
+            aListener.newClassification(featureVector,"We made it! Detected a " + indToGesture(minInd));
+        }
+    }
+
+
+
+    private double sigmoid(double z) {
+        return 1 / (1 + Math.exp(-z));
+    }
+
+
+    private String indToGesture(int index){
+        if(index == 0)
+            return "Fist pump";
+
+        else if(index == 1)
+            return "High wave";
+
+        else if(index == 2)
+            return "Hand shake";
+
+        else if(index == 3)
+            return "Fist bump";
+
+        else if(index == 4)
+            return "Low wave";
+
+        else if(index == 5)
+            return "Point";
+
+        else if(index == 6)
+            return "Point";
+
+        else if(index == 7)
+            return "Point";
+
+        else if(index == 8)
+            return "Point";
+
+        else if(index == 9)
+            return "Motion over";
+
+        else if(index == 10)
+            return "High five";
+
+        else if(index == 11)
+            return "Applause";
+
+        else
+            return "Unknown";
+
     }
 
 
