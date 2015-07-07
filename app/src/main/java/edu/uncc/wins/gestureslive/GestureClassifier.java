@@ -48,19 +48,18 @@ public class GestureClassifier extends SegmentHandler {
         //classify the segment and let the world know about it
 
 
+        //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
         double[] confidence = new double[12];
         double logit;
         //for each potential gesture
         for(int j = 0; j < 12; j++){
             logit = .0;
             for (int i=0; i<featureVector.length;i++)  {
-                //Log.v("TAG", "finished feature iteration " + i);
-
                 logit += sigmoid(Constants.MODEL[j][i] * featureVector[i]);
             }
             confidence[j] = (logit);
-            //Log.v("TAG", "finished gesture iteration " + j);
         }
+
 
 
         int maxInd = 0;
@@ -71,7 +70,7 @@ public class GestureClassifier extends SegmentHandler {
         Log.v("TAG", "looped through confidence");
 
         for(ClassificationListener aListener : myListeners){
-            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + confidence[maxInd]);
+            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + confidence[maxInd] + "\n\n Other sigmoids: " + Arrays.toString(confidence));
         }
     }
 
@@ -84,40 +83,52 @@ public class GestureClassifier extends SegmentHandler {
 
     private String indToGesture(int index){
         if(index == 0)
-            return "Fist pump";
+            return "0";
+            //return "Fist pump";
 
         else if(index == 1)
-            return "High wave";
+            return "1";
+            //return "High wave";
 
         else if(index == 2)
-            return "Hand shake";
+            return "2";
+            //return "Hand shake";
 
         else if(index == 3)
-            return "Fist bump";
+            return "3";
+            //return "Fist bump";
 
         else if(index == 4)
-            return "Low wave";
+            return "4";
+            //return "Low wave";
 
         else if(index == 5)
-            return "Point";
+            return "5";
+            //return "Point";
 
         else if(index == 6)
-            return "Point";
+            return "6";
+            //return "Point";
 
         else if(index == 7)
-            return "Point";
+            return "7";
+            //return "Point";
 
         else if(index == 8)
-            return "Point";
+            return "8";
+            //return "Point";
 
         else if(index == 9)
-            return "Motion over";
+            return "9";
+            //return "Motion over";
 
         else if(index == 10)
-            return "High five";
+            return "10";
+            //return "High five";
 
         else if(index == 11)
-            return "Applause";
+            return "11";
+            //return "Applause";
 
         else
             return "Unknown";

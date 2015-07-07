@@ -174,7 +174,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     }
 
     @Override
-    public void newClassification(double[] featureVector, String classification) {
+    public void newClassification(double[] featureVector, final String classification) {
         //final variables to be used in inner class
         final String tmpClassification = classification;
         final double[] tmpFeatureVector = featureVector;
@@ -182,8 +182,10 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         if(!hasDialogue){
             this.runOnUiThread(new Runnable() {
                 public void run() {
-                    showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
-                    featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
+                    showAlertWithTitleAndMessage(tmpClassification, "");
+                    featureLabel.setText("Previous gesture: " + classification);
+                    //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
+                    //featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
                 }
             });
         }
