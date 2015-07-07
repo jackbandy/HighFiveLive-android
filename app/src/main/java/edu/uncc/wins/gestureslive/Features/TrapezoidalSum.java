@@ -5,7 +5,7 @@ package edu.uncc.wins.gestureslive.Features;
  */
 public class TrapezoidalSum {
 
-    public static double sumFromArrayWithStepSize(Double[] aFunction, Double stepSize){
+    public static double sumFromArrayWithStepSize(double[] aFunction, double stepSize){
         double sum = 0;
 
         for (int i = 0; i < aFunction.length-1; i++) {

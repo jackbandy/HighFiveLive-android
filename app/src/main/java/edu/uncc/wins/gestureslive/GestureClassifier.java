@@ -22,12 +22,14 @@ import de.bwaldvogel.liblinear.Problem;
 public class GestureClassifier extends SegmentHandler {
 
     private ArrayList<ClassificationListener> myListeners;
+    private int totalGestures;
 
     /**
      * Constructor. Since this is the highest level in the chain, no handler is needed
      */
     public GestureClassifier() {
         super();
+        totalGestures = 0;
         myListeners = new ArrayList<ClassificationListener>();
     }
 
@@ -46,24 +48,30 @@ public class GestureClassifier extends SegmentHandler {
         //classify the segment and let the world know about it
 
 
-        double[] costs = new double[12];
+        double[] confidence = new double[12];
         double logit;
         //for each potential gesture
         for(int j = 0; j < 12; j++){
             logit = .0;
             for (int i=0; i<featureVector.length;i++)  {
-                logit += Constants.MODEL[j][i] * featureVector[i];
+                //Log.v("TAG", "finished feature iteration " + i);
+
+                logit += sigmoid(Constants.MODEL[j][i] * featureVector[i]);
             }
-            costs[j] = sigmoid(logit);
+            confidence[j] = (logit);
+            //Log.v("TAG", "finished gesture iteration " + j);
         }
 
-        int minInd = 0;
-        for(int i = 0; i < costs.length; i++)
-            if(costs[i] < costs[minInd]) minInd = i;
 
+        int maxInd = 0;
+        for(int i = 0; i < confidence.length; i++)
+            if(confidence[i] > confidence[maxInd]) maxInd = i;
+
+
+        Log.v("TAG", "looped through confidence");
 
         for(ClassificationListener aListener : myListeners){
-            aListener.newClassification(featureVector,"We made it! Detected a " + indToGesture(minInd));
+            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + confidence[maxInd]);
         }
     }
 

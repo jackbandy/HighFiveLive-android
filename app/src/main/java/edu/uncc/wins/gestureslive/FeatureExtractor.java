@@ -13,8 +13,10 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+import edu.uncc.wins.gestureslive.Features.FFTCoefficients;
 import edu.uncc.wins.gestureslive.Features.FFTSignalEnergy;
 import edu.uncc.wins.gestureslive.Features.MeanCrossingRate;
+import edu.uncc.wins.gestureslive.Features.TrapezoidalSum;
 import edu.uncc.wins.gestureslive.Features.ZeroCrossingRate;
 
 /**
@@ -62,6 +64,7 @@ public class FeatureExtractor extends SegmentHandler {
         DescriptiveStatistics yStats = new DescriptiveStatistics(yArray);
         DescriptiveStatistics zStats = new DescriptiveStatistics(zArray);
 
+
         //min,max,mean
         allFeatures.add(featCount++, xStats.getMin());
         allFeatures.add(featCount++, yStats.getMin());
@@ -73,20 +76,19 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, yStats.getMean());
         allFeatures.add(featCount++, zStats.getMean());
 
+
         //stdev
         allFeatures.add(featCount++, xStats.getStandardDeviation());
         allFeatures.add(featCount++, yStats.getStandardDeviation());
         allFeatures.add(featCount++, zStats.getStandardDeviation());
 
+
         //pairwise correlation
-        /*TODO*/
-        PearsonsCorrelation pCorr = new PearsonsCorrelation(new double[][]{xArray, yArray, zArray});
-        //PLACEHOLDER FOR TESTING
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
-
-
+        PearsonsCorrelation pCorr = new PearsonsCorrelation();
+        pCorr.correlation(xArray,yArray);
+        allFeatures.add(featCount++, pCorr.correlation(xArray,yArray));
+        allFeatures.add(featCount++, pCorr.correlation(xArray,zArray));
+        allFeatures.add(featCount++, pCorr.correlation(yArray,zArray));
 
 
         //zero crossing rate
@@ -94,22 +96,25 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(yArray, 128));
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(zArray,128));
 
+
         //skew
         allFeatures.add(featCount++, xStats.getSkewness());
         allFeatures.add(featCount++, yStats.getSkewness());
         allFeatures.add(featCount++, zStats.getSkewness());
+
 
         //kurtosis
         allFeatures.add(featCount++, xStats.getKurtosis());
         allFeatures.add(featCount++, yStats.getKurtosis());
         allFeatures.add(featCount++, zStats.getKurtosis());
 
+
         //signal-to-noise ratio
         /*TODO*/
         //PLACEHOLDER FOR TESTING
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, xStats.getPercentile(75) - xStats.getPercentile(25));
+        allFeatures.add(featCount++, yStats.getPercentile(75) - yStats.getPercentile(25));
+        allFeatures.add(featCount++, zStats.getPercentile(75) - zStats.getPercentile(25));
 
         //mean crossing rate
         allFeatures.add(featCount++, MeanCrossingRate.meanCrossingRate(xArray, 128, xStats.getMean()));
@@ -121,9 +126,9 @@ public class FeatureExtractor extends SegmentHandler {
         /*TODO*/
         //what step size to use?
         //PLACEHOLDER FOR TESTING
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
-        allFeatures.add(featCount++, 0.);
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(xArray,1));
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(yArray,1));
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(zArray,1));
 
 
         //signal energy
@@ -133,11 +138,25 @@ public class FeatureExtractor extends SegmentHandler {
 
 
         //DFT coefficients
-        /*TODO*/
+        int numberOfCoefficients = 8;
+        Double[] xCoeff = FFTCoefficients.coefficientsFromRawData(xArray,numberOfCoefficients);
+        Double[] yCoeff = FFTCoefficients.coefficientsFromRawData(yArray,numberOfCoefficients);
+        Double[] zCoeff = FFTCoefficients.coefficientsFromRawData(zArray,numberOfCoefficients);
+
+        //for some reason adding them as a list distorts the allFeatures ArrayList,
+        //I use for loops to control the order and keep track of featCount variable
+        for(int i = 0; i < numberOfCoefficients; i++)
+            allFeatures.add(featCount++,(double)xCoeff[i]);
+        for(int i = 0; i < numberOfCoefficients; i++)
+            allFeatures.add(featCount++,(double)yCoeff[i]);
+        for(int i = 0; i < numberOfCoefficients; i++)
+            allFeatures.add(featCount++,(double)zCoeff[i]);
 
 
         //when handling a segment from this link up, a feature vector will be included
         double[] toPass = new double[featCount];
+        Log.v("TAG", "total features: " + featCount);
+
         for(int i = 0; i < toPass.length; i++)
             toPass[i] = allFeatures.get(i);
 

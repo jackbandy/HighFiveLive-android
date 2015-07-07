@@ -10,7 +10,7 @@ import org.apache.commons.math3.transform.TransformType;
  */
 public class FFTSignalEnergy {
 
-    public static double signalEnergyFromFFT(Double[] fftCoeff){
+    public static double signalEnergyFromFFTCoefficients(double[] fftCoeff){
         double sum = 0;
 
         for(int i = 0; i < fftCoeff.length; i++) {
@@ -27,12 +27,7 @@ public class FFTSignalEnergy {
         Complex[] myFFT = myTransformer.transform(rawData, TransformType.FORWARD);
         double[] myCoeff = coeffsFromFFT(myFFT);
 
-        double sum = 0.0;
-        for(int i = 0; i < myCoeff.length; i++) {
-            sum += Math.pow(myCoeff[i], 2);
-        }
-
-        return (1.0/128.0)*sum;
+        return signalEnergyFromFFTCoefficients(myCoeff);
     }
 
 
