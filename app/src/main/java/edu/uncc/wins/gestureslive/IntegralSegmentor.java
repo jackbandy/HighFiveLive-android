@@ -6,6 +6,7 @@ import com.microsoft.band.BandClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Concrete class for listening to a SensorDataStream and outputting segments
@@ -98,7 +99,7 @@ public class IntegralSegmentor implements StreamListener {
                 segmentCoordinates.add(newCoordinate);
             }
 
-            if(windowCount % 192 == 0){
+            if(windowCount % 120 == 0){
                 this.offsetDidOccur();
             }
 
@@ -120,8 +121,6 @@ public class IntegralSegmentor implements StreamListener {
             }
         }
 
-        //to acquire the stream's cache of points, call this getter:
-        //myStream.getCoordinateCache();
 
     }
 
@@ -136,20 +135,20 @@ public class IntegralSegmentor implements StreamListener {
 
     private void offsetDidOccur(){
         Log.v("TAG", "STOPPED segmenting");
+
+
+        if(myBand != null) myBand.vibrateBandOnce();
+
+        List<Coordinate> theList = myStream.getCoordinateCache().subList(128 - (windowCount+8), 128);
+        ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
+        toPass.addAll(theList);
+        nextHandler.handleNewSegment(toPass, null);
+
         windowCount = 0;
         segmentCoordinates.clear();
         trapezoidAreas.clear();
         trapezoidSum = 0;
         isSegmenting = false;
-
-        if(myBand != null) myBand.vibrateBandOnce();
-
-        /*
-         * Skeleton for chain-of-responsibility design pattern
-        if(produces new segment){
-            nextHandler.handleNewSegment(ArrayList<Double>, Double[] featureVector);
-        }
-        */
     }
 
 

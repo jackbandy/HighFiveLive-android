@@ -83,9 +83,10 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, zStats.getStandardDeviation());
 
 
+        Log.v("TAG", "length of arrays: " + xArray.length + "," + yArray.length + "," + zArray.length);
+
         //pairwise correlation
         PearsonsCorrelation pCorr = new PearsonsCorrelation();
-        pCorr.correlation(xArray,yArray);
         allFeatures.add(featCount++, pCorr.correlation(xArray,yArray));
         allFeatures.add(featCount++, pCorr.correlation(xArray,zArray));
         allFeatures.add(featCount++, pCorr.correlation(yArray,zArray));
@@ -123,9 +124,6 @@ public class FeatureExtractor extends SegmentHandler {
 
 
         //trapezoidal sum
-        /*TODO*/
-        //what step size to use?
-        //PLACEHOLDER FOR TESTING
         allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(xArray,1));
         allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(yArray,1));
         allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(zArray,1));

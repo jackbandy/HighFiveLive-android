@@ -1,8 +1,6 @@
 package edu.uncc.wins.gestureslive;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.support.v7.app.ActionBarActivity;
@@ -13,10 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.microsoft.band.notifications.VibrationType;
-
-import java.util.Arrays;
 
 
 public class MainActivity extends ActionBarActivity implements StreamListener, ClassificationListener {
@@ -101,13 +95,15 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         //Build the rest of the chain-of-responsibility starting with the top link
         GestureClassifier myClassifier = new GestureClassifier();
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
-        SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
+        StretchTo128SegmentProcessor myProcessor = new StretchTo128SegmentProcessor(myExtractor);
 
         //Custom constructor to pass MSBand for haptic feedback
         IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
 
         myStream.addListener(mySegmentor);
         myStream.addListener(this);
+        myClassifier.addListener(this);
+
     }
 
 
@@ -179,16 +175,17 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         final String tmpClassification = classification;
         final double[] tmpFeatureVector = featureVector;
         //Log.v("TAG","reached newClassification in mainActivity");
-        if(!hasDialogue){
+
             this.runOnUiThread(new Runnable() {
                 public void run() {
-                    showAlertWithTitleAndMessage(tmpClassification, "");
+                    if(!hasDialogue)
+                        showAlertWithTitleAndMessage(tmpClassification, "");
                     featureLabel.setText("Previous gesture: " + classification);
                     //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
                     //featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
                 }
             });
-        }
+
     }
 
     private void showAlertWithTitleAndMessage(String title, String message){

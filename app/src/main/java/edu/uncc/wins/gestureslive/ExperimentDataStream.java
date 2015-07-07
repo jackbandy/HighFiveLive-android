@@ -111,8 +111,8 @@ public class ExperimentDataStream extends SensorDataStream {
         DataStreamTask myTask = new DataStreamTask();
         service.scheduleWithFixedDelay(myTask, 0, 20, TimeUnit.MILLISECONDS);
 
-    }
 
+    }
 
     private class DataStreamTask implements Runnable {
         private int count;
@@ -154,7 +154,6 @@ public class ExperimentDataStream extends SensorDataStream {
         service.shutdownNow();
         isStreaming = false;
     }
-
 
     public ArrayList<Coordinate> getCoordinateCache() {
         return (ArrayList<Coordinate>) myCache.subList(size-128,size);

@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.uncc.wins.gestureslive.StreamListener;
 import edu.uncc.wins.gestureslive.SensorDataStream;
@@ -78,7 +79,10 @@ public class MSBandDataStream extends SensorDataStream {
      * collected in the stream from the x, y, and z axes
      */
     public ArrayList<Coordinate> getCoordinateCache() {
-        return new ArrayList<Coordinate>(0);
+        List<Coordinate> trimmed =  myCache.subList(myCache.size()-128,myCache.size());
+        ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>(128);
+        toReturn.addAll(trimmed);
+        return toReturn;
     }
 
 
@@ -96,7 +100,8 @@ public class MSBandDataStream extends SensorDataStream {
 
             if (event != null) {
                 accX = event.getAccelerationX();
-                accY = event.getAccelerationY();
+                //flip y-axis to fit our model
+                accY = (-1) * event.getAccelerationY();
                 accZ = event.getAccelerationZ();
             }
 

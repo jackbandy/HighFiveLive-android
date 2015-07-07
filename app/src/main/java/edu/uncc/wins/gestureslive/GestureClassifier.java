@@ -49,28 +49,37 @@ public class GestureClassifier extends SegmentHandler {
 
 
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
-        double[] confidence = new double[12];
+        double[] costs = new double[12];
         double logit;
         //for each potential gesture
         for(int j = 0; j < 12; j++){
             logit = .0;
+
             for (int i=0; i<featureVector.length;i++)  {
-                logit += sigmoid(Constants.MODEL[j][i] * featureVector[i]);
+                //double term1 = (-1 * featureVector[i]) * Math.log(sigmoid(Constants.MODEL[j][i]));
+                //double term2 = (1 - featureVector[i]) * Math.log(1 - sigmoid(Constants.MODEL[j][i]));
+                logit += featureVector[i] * Constants.MODEL[j][i];
             }
-            confidence[j] = (logit);
+            costs[j] = sigmoid(logit);
         }
 
 
-
         int maxInd = 0;
-        for(int i = 0; i < confidence.length; i++)
-            if(confidence[i] > confidence[maxInd]) maxInd = i;
-
+        String candidates = "";
+        for(int i = 0; i < costs.length; i++) {
+            if (costs[i] > costs[maxInd]) maxInd = i;
+            if(costs[i] > .9) candidates += indToGesture(i) + ",\n";
+        }
+        /*
+        int minInd = 0;
+        for(int i = 0; i < costs.length; i++)
+            if(costs[i] < costs[minInd]) minInd = i;
+        */
 
         Log.v("TAG", "looped through confidence");
 
         for(ClassificationListener aListener : myListeners){
-            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + confidence[maxInd] + "\n\n Other sigmoids: " + Arrays.toString(confidence));
+            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + costs[maxInd] + "\n\n Candidates: " + candidates);
         }
     }
 
@@ -83,55 +92,55 @@ public class GestureClassifier extends SegmentHandler {
 
     private String indToGesture(int index){
         if(index == 0)
-            return "0";
-            //return "Fist pump";
+            //return "0";
+            return "FIST PUMP";
 
         else if(index == 1)
-            return "1";
-            //return "High wave";
+            //return "1";
+            return "HIGH WAVE";
 
         else if(index == 2)
-            return "2";
-            //return "Hand shake";
+            //return "2";
+            return "HAND SHAKE";
 
         else if(index == 3)
-            return "3";
-            //return "Fist bump";
+            //return "3";
+            return "FIST BUMP";
 
         else if(index == 4)
-            return "4";
-            //return "Low wave";
+            //return "4";
+            return "LOW WAVE";
 
         else if(index == 5)
-            return "5";
-            //return "Point";
+            //return "5";
+            return "POINT";
 
         else if(index == 6)
-            return "6";
-            //return "Point";
+            //return "6";
+            return "POINT";
 
         else if(index == 7)
-            return "7";
-            //return "Point";
+            //return "7";
+            return "POINT";
 
         else if(index == 8)
-            return "8";
-            //return "Point";
+            //return "8";
+            return "POINT";
 
         else if(index == 9)
-            return "9";
-            //return "Motion over";
+            //return "9";
+            return "MOTION OVER";
 
         else if(index == 10)
-            return "10";
-            //return "High five";
+            //return "10";
+            return "HIGH FIVE";
 
         else if(index == 11)
-            return "11";
-            //return "Applause";
+            //return "11";
+            return "APPLAUSE";
 
         else
-            return "Unknown";
+            return "UNKNOWN";
 
     }
 

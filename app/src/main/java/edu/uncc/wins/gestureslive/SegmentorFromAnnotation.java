@@ -57,7 +57,7 @@ public class SegmentorFromAnnotation implements StreamListener {
 
         if(!isSegmenting){
             //Not currently tracking a gesture, start tracking if threshold is crossed
-            if(annotatedStarts.contains(totalCount)){
+            if(annotatedStarts.contains(totalCount+2000)){
                 isSegmenting = true;
                 segmentCoordinates.add(windowCount,newCoordinate);
                 Log.v("TAG", "STARTED segmenting");
