@@ -99,22 +99,20 @@ public class IntegralSegmentor implements StreamListener {
                 segmentCoordinates.add(newCoordinate);
             }
 
-            if(windowCount % 120 == 0){
+            if(windowCount % 112 == 0){
                 this.offsetDidOccur();
             }
 
             else if(windowCount % 16 == 0){
-                double xwidth = 16;
+
                 Double[] current = newCoordinate.toArray();
                 Double[] previous = segmentCoordinates.get(14).toArray();
                 double average = ((current[0]+current[1]+current[2]) - (previous[0]+previous[1]+previous[2])) / 2;
-                //Log.v("TAG", "x1: " + newCoordinate.toArray()[0] + "\taverage: " + average);
-                //Log.v("TAG", "xwidth: " + xwidth + "\taverage: " + average);
-                trapezoidSum += average*xwidth;
+                trapezoidSum += average*1.0;
                 //Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
 
 
-                if(stdDev(segmentCoordinates) < .05 && windowCount > 64){
+                if(stdDev(segmentCoordinates) < .05 && windowCount > 48){
                     //end the segment if the stdev has leveled off
                     this.offsetDidOccur();
                 }
@@ -139,7 +137,7 @@ public class IntegralSegmentor implements StreamListener {
 
         if(myBand != null) myBand.vibrateBandOnce();
 
-        List<Coordinate> theList = myStream.getCoordinateCache().subList(128 - (windowCount+8), 128);
+        List<Coordinate> theList = myStream.getCoordinateCache().subList(128 - (windowCount+16), 128);
         ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
         toPass.addAll(theList);
         nextHandler.handleNewSegment(toPass, null);

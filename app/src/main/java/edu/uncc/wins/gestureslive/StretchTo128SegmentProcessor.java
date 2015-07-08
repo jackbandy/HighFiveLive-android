@@ -38,9 +38,9 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
             toPass.add(currentSize++,fluffCoordinate);
 
         //Add the actual segment points
-        Log.v("TAG", "Old Points: " + segmentPoints.toString());
+        //Log.v("TAG", "Old Points: " + segmentPoints.toString());
         toPass.addAll(currentSize, segmentPoints);
-        Log.v("TAG", "New Points: " + toPass.toString());
+        //Log.v("TAG", "New Points: " + toPass.toString());
 
         currentSize += initialSize;
 

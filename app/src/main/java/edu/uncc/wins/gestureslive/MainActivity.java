@@ -119,7 +119,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         */
 
         AssetManager ast = getAssets();
-        myStream = new ExperimentDataStream("trial0.csv", ast);
+        myStream = new CSVDataStream("trial0.csv", ast);
 
         //Build the rest of the chain-of-responsibility starting with the top link
         GestureClassifier myClassifier = new GestureClassifier();

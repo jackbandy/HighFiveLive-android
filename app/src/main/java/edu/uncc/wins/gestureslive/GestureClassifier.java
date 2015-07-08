@@ -9,6 +9,8 @@ import com.microsoft.band.notifications.VibrationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.bwaldvogel.liblinear.Feature;
 import de.bwaldvogel.liblinear.Problem;
@@ -49,16 +51,16 @@ public class GestureClassifier extends SegmentHandler {
 
 
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
-        double[] costs = new double[12];
+        double[] costs = new double[9];
         double logit;
         //for each potential gesture
-        for(int j = 0; j < 12; j++){
+        for(int j = 0; j < 9; j++){
             logit = .0;
 
             for (int i=0; i<featureVector.length;i++)  {
                 //double term1 = (-1 * featureVector[i]) * Math.log(sigmoid(Constants.MODEL[j][i]));
                 //double term2 = (1 - featureVector[i]) * Math.log(1 - sigmoid(Constants.MODEL[j][i]));
-                logit += featureVector[i] * Constants.MODEL[j][i];
+                logit += featureVector[i] * Constants.MODEL_SINGLE_POINT[j][i];
             }
             costs[j] = sigmoid(logit);
         }
@@ -68,15 +70,9 @@ public class GestureClassifier extends SegmentHandler {
         String candidates = "";
         for(int i = 0; i < costs.length; i++) {
             if (costs[i] > costs[maxInd]) maxInd = i;
-            if(costs[i] > .9) candidates += indToGesture(i) + ",\n";
+            if(costs[i] > .9) candidates += "\n" + indToGesture(i) + " (" + costs[i] + "),";
         }
-        /*
-        int minInd = 0;
-        for(int i = 0; i < costs.length; i++)
-            if(costs[i] < costs[minInd]) minInd = i;
-        */
 
-        Log.v("TAG", "looped through confidence");
 
         for(ClassificationListener aListener : myListeners){
             aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + costs[maxInd] + "\n\n Candidates: " + candidates);
@@ -90,64 +86,20 @@ public class GestureClassifier extends SegmentHandler {
     }
 
 
+
     private String indToGesture(int index){
-        if(index == 0)
-            //return "0";
-            return "FIST PUMP";
 
-        else if(index == 1)
-            //return "1";
-            return "HIGH WAVE";
-
-        else if(index == 2)
-            //return "2";
-            return "HAND SHAKE";
-
-        else if(index == 3)
-            //return "3";
-            return "FIST BUMP";
-
-        else if(index == 4)
-            //return "4";
-            return "LOW WAVE";
-
-        else if(index == 5)
-            //return "5";
-            return "POINT";
-
-        else if(index == 6)
-            //return "6";
-            return "POINT";
-
-        else if(index == 7)
-            //return "7";
-            return "POINT";
-
-        else if(index == 8)
-            //return "8";
-            return "POINT";
-
-        else if(index == 9)
-            //return "9";
-            return "MOTION OVER";
-
-        else if(index == 10)
-            //return "10";
-            return "HIGH FIVE";
-
-        else if(index == 11)
-            //return "11";
-            return "APPLAUSE";
-
-        else
-            return "UNKNOWN";
+        if(Constants.SINGLE_POINT_INDECES.containsKey(index)){
+            return Constants.SINGLE_POINT_INDECES.get(index);
+        }
+        else return "UNKNOWN";
 
     }
+
 
 
     public void addListener(ClassificationListener aListener){
         myListeners.add(aListener);
     }
-
 
 }

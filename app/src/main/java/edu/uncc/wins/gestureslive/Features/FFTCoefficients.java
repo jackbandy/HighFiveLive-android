@@ -16,8 +16,8 @@ public class FFTCoefficients {
 
         Double[] toReturn = new Double[howManyCoeffs];
 
-        for(int i = 0; i < toReturn.length; i++) {
-            toReturn[i] = myFFT[i].getReal();
+        for(int i = 0; i < howManyCoeffs; i++) {
+            toReturn[i] = myFFT[i].abs();
         }
 
         return toReturn;

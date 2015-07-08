@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Created by jbandy3 on 6/17/2015.
  */
-public class ExperimentDataStream extends SensorDataStream {
+public class CSVDataStream extends SensorDataStream {
 
     private boolean isStreaming;
     private String myFileName;
@@ -34,7 +34,7 @@ public class ExperimentDataStream extends SensorDataStream {
     BufferedReader reader;
     private int size;
 
-    public ExperimentDataStream(String aFileName, AssetManager aManager) {
+    public CSVDataStream(String aFileName, AssetManager aManager) {
         super();
         this.myFileName = aFileName;
         myManager = aManager;
