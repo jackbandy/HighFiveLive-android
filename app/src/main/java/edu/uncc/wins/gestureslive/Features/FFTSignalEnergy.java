@@ -36,7 +36,7 @@ public class FFTSignalEnergy {
         double[] toReturn = new double[aFFT.length];
 
         for(int i = 0; i < toReturn.length; i++) {
-            toReturn[i] = aFFT[i].getReal();
+            toReturn[i] = aFFT[i].abs();
         }
 
         return toReturn;

@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements StreamListener, ClassificationListener {
 
+
+
     private Button dataBtn;
     private Button bandBtn;
     private TextView txtView;
@@ -98,7 +100,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         StretchTo128SegmentProcessor myProcessor = new StretchTo128SegmentProcessor(myExtractor);
 
         //Custom constructor to pass MSBand for haptic feedback
-        IntegralSegmentor mySegmentor = new IntegralSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
+        StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
 
         myStream.addListener(mySegmentor);
         myStream.addListener(this);
@@ -178,8 +180,10 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
             this.runOnUiThread(new Runnable() {
                 public void run() {
-                    if(!hasDialogue)
+                    if(!hasDialogue && Constants.SHOW_DIALOGS)
                         showAlertWithTitleAndMessage(tmpClassification, "");
+                    if(Constants.VIBRATE_FOR_GESTURE && bandBtn.isEnabled());
+                        ((MSBandDataStream) myStream).vibrateBandOnce();
                     featureLabel.setText("Previous gesture: " + classification);
                     //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
                     //featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));

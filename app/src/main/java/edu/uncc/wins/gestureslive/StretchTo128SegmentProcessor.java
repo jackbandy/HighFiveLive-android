@@ -27,6 +27,39 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         //process the data, features not yet extracted at this point
         Log.v("TAG", "RECEIVED segment from segmentor");
+
+        //myNextHandler.handleNewSegment(keepAtCenter(segmentPoints), null);
+        myNextHandler.handleNewSegment(pushToLeft(segmentPoints), null);
+
+        Log.v("TAG", "PUSHED to handler from preprocessor");
+    }
+
+
+
+    private static ArrayList<Coordinate> pushToLeft(ArrayList<Coordinate> segmentPoints){
+        ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(128);
+        Coordinate fluffCoordinate = new Coordinate(0.,0.,0.);
+        int initialSize = segmentPoints.size();
+        int fluffPointsNeeded = 128 - initialSize;
+        int currentSize = 0;
+
+        //Add the actual segment points
+        //Log.v("TAG", "Old Points: " + segmentPoints.toString());
+        toPass.addAll(currentSize, segmentPoints);
+        //Log.v("TAG", "New Points: " + toPass.toString());
+
+        currentSize += initialSize;
+
+        //Fill in the last part of the array
+        while(currentSize<128)
+            toPass.add(currentSize++,fluffCoordinate);
+
+        return toPass;
+    }
+
+
+
+    private static ArrayList<Coordinate> keepAtCenter(ArrayList<Coordinate> segmentPoints){
         ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(128);
         Coordinate fluffCoordinate = new Coordinate(0.,0.,0.);
         int initialSize = segmentPoints.size();
@@ -48,9 +81,7 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
         while(currentSize<128)
             toPass.add(currentSize++,fluffCoordinate);
 
-
-        myNextHandler.handleNewSegment(toPass, null);
-        Log.v("TAG", "PUSHED to handler from preprocessor");
+        return toPass;
     }
 
 }

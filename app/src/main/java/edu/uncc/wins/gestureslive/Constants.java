@@ -7,7 +7,9 @@ import java.util.Map;
  * Created by jbandy3 on 6/29/2015.
  */
 public class Constants {
-    public static final double[] HighFiveCoeff = {};
+    public static final boolean SHOW_DIALOGS = false;
+    public static final boolean VIBRATE_FOR_SEGMENT = false;
+    public static final boolean VIBRATE_FOR_GESTURE = true;
 
     public static final double[][] MODEL_SINGLE_POINT = {
             /*
@@ -33,19 +35,19 @@ public class Constants {
 
     };
 
-    public static final Map<Integer, String> SINGLE_POINT_INDECES;
+    public static final Map<Integer, String> SINGLE_POINT_INDECES_MAP;
     static
     {
-        SINGLE_POINT_INDECES = new HashMap<Integer, String>();
-        SINGLE_POINT_INDECES.put(0,"FIST PUMP");
-        SINGLE_POINT_INDECES.put(1,"HIGH WAVE");
-        SINGLE_POINT_INDECES.put(2,"HAND SHAKE");
-        SINGLE_POINT_INDECES.put(3,"FIST BUMP");
-        SINGLE_POINT_INDECES.put(4,"LOW WAVE");
-        SINGLE_POINT_INDECES.put(5,"POINT");
-        SINGLE_POINT_INDECES.put(6,"MOTION OVER");
-        SINGLE_POINT_INDECES.put(7,"HIGH FIVE");
-        SINGLE_POINT_INDECES.put(8,"APPLAUSE");
+        SINGLE_POINT_INDECES_MAP = new HashMap<Integer, String>();
+        SINGLE_POINT_INDECES_MAP.put(0, "FIST PUMP");
+        SINGLE_POINT_INDECES_MAP.put(1, "HIGH WAVE");
+        SINGLE_POINT_INDECES_MAP.put(2, "HAND SHAKE");
+        SINGLE_POINT_INDECES_MAP.put(3, "FIST BUMP");
+        SINGLE_POINT_INDECES_MAP.put(4, "LOW WAVE");
+        SINGLE_POINT_INDECES_MAP.put(5, "POINT");
+        SINGLE_POINT_INDECES_MAP.put(6, "MOTION OVER");
+        SINGLE_POINT_INDECES_MAP.put(7, "HIGH FIVE");
+        SINGLE_POINT_INDECES_MAP.put(8, "APPLAUSE");
     }
 
 

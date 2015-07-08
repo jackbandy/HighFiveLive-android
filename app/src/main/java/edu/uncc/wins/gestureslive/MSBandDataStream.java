@@ -109,6 +109,10 @@ public class MSBandDataStream extends SensorDataStream {
             for(StreamListener myListener: getMyListeners()){
                 myListener.newSensorData(toPass);
             }
+            if(myCache.size() == 128){
+                myCache.remove(0);
+                myCache.trimToSize();
+            }
             myCache.add(toPass);
         }
     };

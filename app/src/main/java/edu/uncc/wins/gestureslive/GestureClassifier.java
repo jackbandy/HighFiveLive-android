@@ -1,19 +1,9 @@
 package edu.uncc.wins.gestureslive;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.support.annotation.MainThread;
 import android.util.Log;
-
-import com.microsoft.band.notifications.VibrationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import de.bwaldvogel.liblinear.Feature;
-import de.bwaldvogel.liblinear.Problem;
 
 /**
  * The highest link in the segment handler chain of responsibility:
@@ -66,16 +56,22 @@ public class GestureClassifier extends SegmentHandler {
         }
 
 
-        int maxInd = 0;
+        int maxInd = -1;
+        double max = 0;
         String candidates = "";
         for(int i = 0; i < costs.length; i++) {
-            if (costs[i] > costs[maxInd]) maxInd = i;
-            if(costs[i] > .9) candidates += "\n" + indToGesture(i) + " (" + costs[i] + "),";
+            if(costs[i] > .5){
+                if (costs[i] > max){
+                    maxInd = i;
+                    max = costs[i];
+                }
+                candidates += "\n" + indToGesture(i) + " (" + costs[i] + "),";
+            }
         }
 
 
         for(ClassificationListener aListener : myListeners){
-            aListener.newClassification(featureVector,"Detected a " + indToGesture(maxInd) + " as gesture number " + totalGestures++ + " sigmoid: " + costs[maxInd] + "\n\n Candidates: " + candidates);
+            aListener.newClassification(featureVector,"Detected " + indToGesture(maxInd) + " as gesture number " + totalGestures++  + "\n\n Candidates: " + candidates);
         }
     }
 
@@ -86,20 +82,19 @@ public class GestureClassifier extends SegmentHandler {
     }
 
 
-
     private String indToGesture(int index){
 
-        if(Constants.SINGLE_POINT_INDECES.containsKey(index)){
-            return Constants.SINGLE_POINT_INDECES.get(index);
+        if(Constants.SINGLE_POINT_INDECES_MAP.containsKey(index)){
+            return Constants.SINGLE_POINT_INDECES_MAP.get(index);
         }
         else return "UNKNOWN";
 
     }
 
 
-
     public void addListener(ClassificationListener aListener){
         myListeners.add(aListener);
     }
+
 
 }

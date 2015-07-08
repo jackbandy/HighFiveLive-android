@@ -2,10 +2,7 @@ package edu.uncc.wins.gestureslive;
 
 import android.util.Log;
 
-import com.microsoft.band.BandClient;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,14 +10,15 @@ import java.util.List;
  * Employs the observer design pattern as a listener,
  * also begins the chain-of-responsibility
  *
- * IntegralSegmentor will segment gestures by integrating the acceleration functions,
- * and chopping them once the value of that integration returns to zero
+ * StdDevSegmentor will segment gestures based on standard deviation thresholds
  *
  * Created by jbandy3 on 6/16/2015.
  */
 
-public class IntegralSegmentor implements StreamListener {
-    private final double MAGNITUDE_ONSET_THRESHOLD = 1.4;
+public class StdDevSegmentor implements StreamListener {
+    private final double STDEV_ONSET_THRESHOLD = .5;
+    private final double STDEV_OFFSET_THRESHOLD = 0.1;
+
 
     private SegmentHandler nextHandler;
     private SensorDataStream myStream;
@@ -39,7 +37,7 @@ public class IntegralSegmentor implements StreamListener {
      * @param aStream the stream to listen to
      * @param aHandler the first handler in the Segment chain
      */
-    public IntegralSegmentor(SensorDataStream aStream, SegmentHandler aHandler){
+    public StdDevSegmentor(SensorDataStream aStream, SegmentHandler aHandler){
         myStream = aStream;
         nextHandler = aHandler;
         windowCount = 0;
@@ -52,7 +50,7 @@ public class IntegralSegmentor implements StreamListener {
     }
 
 
-    public IntegralSegmentor(MSBandDataStream aBand, SensorDataStream aStream, SegmentHandler aHandler){
+    public StdDevSegmentor(MSBandDataStream aBand, SensorDataStream aStream, SegmentHandler aHandler){
         this(aStream,aHandler);
         myBand = aBand;
     }
@@ -80,28 +78,41 @@ public class IntegralSegmentor implements StreamListener {
         totalCount++;
         if(!isSegmenting){
             //Not currently tracking a gesture, start tracking if threshold is crossed
+            if (windowCount == 16){
+                //
+                segmentCoordinates.remove(0);
+                segmentCoordinates.trimToSize();
+                segmentCoordinates.add(15,newCoordinate);
+                if(stdDev(segmentCoordinates) > STDEV_ONSET_THRESHOLD){
+                    this.onsetDidOccur();
+                }
+            }
+            else {
+                segmentCoordinates.add(newCoordinate);
+                windowCount++;
+            }
+
+
+            /*
             if(newCoordinate.getMagnitude() > MAGNITUDE_ONSET_THRESHOLD) {
                 this.onsetDidOccur();
             }
+            */
         }
 
 
         else {
             //Currently tracking a gesture,
             windowCount++;
-            if (windowCount > 16){
-                //
-                segmentCoordinates.remove(0);
-                segmentCoordinates.trimToSize();
-                segmentCoordinates.add(15,newCoordinate);
-            }
-            else {
-                segmentCoordinates.add(newCoordinate);
-            }
+            segmentCoordinates.remove(0);
+            segmentCoordinates.trimToSize();
+            segmentCoordinates.add(15,newCoordinate);
+
 
             if(windowCount % 112 == 0){
                 this.offsetDidOccur();
             }
+
 
             else if(windowCount % 16 == 0){
 
@@ -112,11 +123,12 @@ public class IntegralSegmentor implements StreamListener {
                 //Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
 
 
-                if(stdDev(segmentCoordinates) < .05 && windowCount > 48){
+                if(stdDev(segmentCoordinates) < STDEV_OFFSET_THRESHOLD && windowCount > 48){
                     //end the segment if the stdev has leveled off
                     this.offsetDidOccur();
                 }
             }
+
         }
 
 
@@ -127,7 +139,7 @@ public class IntegralSegmentor implements StreamListener {
         isSegmenting = true;
         Log.v("TAG", "STARTED segmenting");
 
-        if(myBand != null) myBand.vibrateBandTwice();
+        if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandTwice();
     }
 
 
@@ -135,7 +147,7 @@ public class IntegralSegmentor implements StreamListener {
         Log.v("TAG", "STOPPED segmenting");
 
 
-        if(myBand != null) myBand.vibrateBandOnce();
+        if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandOnce();
 
         List<Coordinate> theList = myStream.getCoordinateCache().subList(128 - (windowCount+16), 128);
         ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
