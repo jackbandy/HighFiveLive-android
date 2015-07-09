@@ -125,11 +125,14 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
         //Build the rest of the chain-of-responsibility starting with the top link
         BasicGestureClassifier myClassifier = new BasicGestureClassifier();
+        //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
+
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
         //Create a segmentor that listens to the stream and reports to the processor
         SegmentorFromAnnotation annotationSegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
+
 
         myStream.addListener(annotationSegmentor);
         myStream.addListener(this);

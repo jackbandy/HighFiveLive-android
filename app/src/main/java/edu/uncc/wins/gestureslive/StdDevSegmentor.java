@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class StdDevSegmentor implements StreamListener {
-    private final double STDEV_ONSET_THRESHOLD = .5;
+    private final double STDEV_ONSET_THRESHOLD = .6;
     private final double STDEV_OFFSET_THRESHOLD = 0.1;
 
 

@@ -39,7 +39,6 @@ public class CSVDataStream implements SensorDataStream {
         super();
         this.myFileName = aFileName;
         myManager = aManager;
-        myCache = new ArrayList<Coordinate>();
         myListeners = new ArrayList<StreamListener>();
         size = 0;
     }
@@ -53,7 +52,7 @@ public class CSVDataStream implements SensorDataStream {
 
     public void startupStream() {
         isStreaming = true;
-
+        myCache = new ArrayList<Coordinate>(Constants.COORDINATE_CACHE_SIZE);
         reader = null;
         theDoubles = new ArrayList<String>();
         String line;
@@ -103,7 +102,15 @@ public class CSVDataStream implements SensorDataStream {
             System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
             */
             Coordinate toPass = new Coordinate(accX, accY, accZ);
-            myCache.add(size++,toPass);
+            if(size < Constants.COORDINATE_CACHE_SIZE)
+                myCache.add(size++,toPass);
+            else {
+                size++;
+                myCache.remove(0);
+                myCache.trimToSize();
+                myCache.add(toPass);
+            }
+
             for (StreamListener myListener : myListeners) {
                 myListener.newSensorData(toPass);
             }

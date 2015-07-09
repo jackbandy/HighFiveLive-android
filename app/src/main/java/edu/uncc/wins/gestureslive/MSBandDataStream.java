@@ -44,12 +44,15 @@ public class MSBandDataStream implements SensorDataStream {
     private Context context;
     private ArrayList<Coordinate> myCache;
     private ArrayList<StreamListener> myListeners;
+    private int totalPoints;
 
     public MSBandDataStream(Context context){
         client = null;
         this.context = context.getApplicationContext();
         myListeners = new ArrayList<StreamListener>();
+        int totalPoints = 0;
     }
+
 
     public MSBandDataStream(){
         super();
@@ -64,7 +67,7 @@ public class MSBandDataStream implements SensorDataStream {
 
     public void startupStream() {
         System.out.println("Reached startup stream");
-        myCache = new ArrayList<Coordinate>(256);
+        myCache = new ArrayList<Coordinate>(Constants.COORDINATE_CACHE_SIZE);
         new myTask().execute();
     }
 
@@ -85,10 +88,7 @@ public class MSBandDataStream implements SensorDataStream {
      * collected in the stream from the x, y, and z axes
      */
     public ArrayList<Coordinate> getCoordinateCache() {
-        List<Coordinate> trimmed =  myCache.subList(myCache.size()-256,myCache.size());
-        ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>(256);
-        toReturn.addAll(trimmed);
-        return toReturn;
+        return myCache;
     }
 
 
@@ -111,15 +111,17 @@ public class MSBandDataStream implements SensorDataStream {
                 accZ = event.getAccelerationZ();
             }
 
-            Coordinate toPass = new Coordinate(accX,accY,accZ);
-            for(StreamListener aListener: myListeners){
+            Coordinate toPass = new Coordinate(accX, accY, accZ);
+            for (StreamListener aListener : myListeners) {
                 aListener.newSensorData(toPass);
             }
-            if(myCache.size() == 256){
+            if (totalPoints < Constants.COORDINATE_CACHE_SIZE) {
+                myCache.add(totalPoints++, toPass);
+            } else {
                 myCache.remove(0);
                 myCache.trimToSize();
+                myCache.add(toPass);
             }
-            myCache.add(toPass);
         }
     };
 
