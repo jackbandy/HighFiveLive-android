@@ -2,8 +2,10 @@ package edu.uncc.wins.gestureslive;
 
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.stat.*;
@@ -36,13 +38,18 @@ public class FeatureExtractor extends SegmentHandler {
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         Log.v("TAG", "reached feature extractor");
         //extract the features!
+        myNextHandler.handleNewSegment(segmentPoints, featuresFromWindow(segmentPoints));
+
+        Log.v("TAG", "pushing to classifier from extractor");
+    }
 
 
+    public static double[] featuresFromWindow(List<Coordinate> window){
         ArrayList<Double> allFeatures = new ArrayList<Double>();
         int featCount = 0;
 
         //individual arrays to hold all the points
-        int numberOfPoints = segmentPoints.size();
+        int numberOfPoints = window.size();
         double[] xArray = new double[numberOfPoints];
         double[] yArray = new double[numberOfPoints];
         double[] zArray = new double[numberOfPoints];
@@ -52,7 +59,7 @@ public class FeatureExtractor extends SegmentHandler {
 
         //extract raw doubles from the Coordinates
         for(int index = 0; index < numberOfPoints; index++) {
-            Double[] retrieved = segmentPoints.get(index).toArray();
+            Double[] retrieved = window.get(index).toArray();
             xArray[index] = retrieved[0];
             yArray[index] = retrieved[1];
             zArray[index] = retrieved[2];
@@ -152,14 +159,14 @@ public class FeatureExtractor extends SegmentHandler {
 
 
         //when handling a segment from this link up, a feature vector will be included
-        double[] toPass = new double[featCount];
+        double[] toReturn = new double[featCount];
         Log.v("TAG", "total features: " + featCount);
 
-        for(int i = 0; i < toPass.length; i++)
-            toPass[i] = allFeatures.get(i);
+        for(int i = 0; i < toReturn.length; i++)
+            toReturn[i] = allFeatures.get(i);
 
-        myNextHandler.handleNewSegment(segmentPoints, toPass);
-        Log.v("TAG", "pushing to classifier from extractor");
+        return toReturn;
     }
+
 
 }

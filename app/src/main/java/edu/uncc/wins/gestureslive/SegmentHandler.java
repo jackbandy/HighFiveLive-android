@@ -17,6 +17,7 @@ public abstract class SegmentHandler {
         myNextHandler = null;
     }
 
+
     /**
      * Standard constructor
      * @param nextHandler the next link in the chain-of-responsibility
@@ -24,6 +25,7 @@ public abstract class SegmentHandler {
     public SegmentHandler(SegmentHandler nextHandler){
         myNextHandler = nextHandler;
     }
+
 
     /**
      * Accept the segment from a Segmentor which was subscribed to

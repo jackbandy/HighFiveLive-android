@@ -57,7 +57,6 @@ public class StdDevSegmentor implements StreamListener {
 
 
     public double stdDev(ArrayList<Coordinate> aWindow){
-
         //Standard deviation loop from StackOverflow
         double powerSum1 = 0;
         double powerSum2 = 0;
@@ -92,12 +91,6 @@ public class StdDevSegmentor implements StreamListener {
                 windowCount++;
             }
 
-
-            /*
-            if(newCoordinate.getMagnitude() > MAGNITUDE_ONSET_THRESHOLD) {
-                this.onsetDidOccur();
-            }
-            */
         }
 
 
@@ -109,7 +102,7 @@ public class StdDevSegmentor implements StreamListener {
             segmentCoordinates.add(15,newCoordinate);
 
 
-            if(windowCount % 112 == 0){
+            if(windowCount % 120 == 0){
                 this.offsetDidOccur();
             }
 
@@ -125,6 +118,7 @@ public class StdDevSegmentor implements StreamListener {
 
                 if(stdDev(segmentCoordinates) < STDEV_OFFSET_THRESHOLD && windowCount > 48){
                     //end the segment if the stdev has leveled off
+                    //AND the window is at least 48 points
                     this.offsetDidOccur();
                 }
             }
@@ -149,7 +143,8 @@ public class StdDevSegmentor implements StreamListener {
 
         if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandOnce();
 
-        List<Coordinate> theList = myStream.getCoordinateCache().subList(128 - (windowCount+16), 128);
+        int tmpSize = myStream.getCoordinateCache().size();
+        List<Coordinate> theList = myStream.getCoordinateCache().subList((tmpSize - (windowCount+20)), tmpSize);
         ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
         toPass.addAll(theList);
         nextHandler.handleNewSegment(toPass, null);

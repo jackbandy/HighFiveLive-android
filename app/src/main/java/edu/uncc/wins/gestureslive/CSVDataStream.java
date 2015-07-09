@@ -23,13 +23,14 @@ import java.util.concurrent.TimeUnit;
  *
  * Created by jbandy3 on 6/17/2015.
  */
-public class CSVDataStream extends SensorDataStream {
+public class CSVDataStream implements SensorDataStream {
 
     private boolean isStreaming;
     private String myFileName;
     private ScheduledExecutorService service;
     AssetManager myManager;
     ArrayList<String> theDoubles;
+    ArrayList<StreamListener> myListeners;
     private ArrayList<Coordinate> myCache;
     BufferedReader reader;
     private int size;
@@ -39,56 +40,16 @@ public class CSVDataStream extends SensorDataStream {
         this.myFileName = aFileName;
         myManager = aManager;
         myCache = new ArrayList<Coordinate>();
+        myListeners = new ArrayList<StreamListener>();
         size = 0;
     }
 
-    private class readTask extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            System.out.println("doing background");
 
-            BufferedReader reader = null;
-            try {
-                System.out.println("doing reader");
-
-                reader = new BufferedReader(new InputStreamReader(myManager.open(myFileName)));
-                String line;
-
-                System.out.println("doing while");
-
-                while (isStreaming && (line = reader.readLine()) != null) {
-                    //System.out.println("parsing");
-
-                    StringTokenizer myTknizer = new StringTokenizer(line, ",");
-                    //String[] RowData = line.split(",");
-
-                    final double accX = Double.parseDouble(myTknizer.nextElement().toString());
-                    final double accY = Double.parseDouble(myTknizer.nextElement().toString());
-                    final double accZ = Double.parseDouble(myTknizer.nextElement().toString());
-                    System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
-
-                    Coordinate toPass = new Coordinate(accX, accY, accZ);
-                    for (StreamListener myListener : getMyListeners()) {
-                        myListener.newSensorData(toPass);
-                    }
-
-                    System.out.println("sleeping");
-                    //Delay the next point by 20ms and 0ns to match the 20Hz used in experiment
-
-                    Thread.sleep(100);
-
-                }
-
-            } catch (IOException ex) {
-                System.out.println("2Boohoo\n" + ex.toString());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
+    @Override
+    public void addListener(StreamListener aListener) {
+        myListeners.add(aListener);
     }
-
 
     public void startupStream() {
         isStreaming = true;
@@ -111,8 +72,8 @@ public class CSVDataStream extends SensorDataStream {
         DataStreamTask myTask = new DataStreamTask();
         service.scheduleWithFixedDelay(myTask, 0, 20, TimeUnit.MILLISECONDS);
 
-
     }
+
 
     private class DataStreamTask implements Runnable {
         private int count;
@@ -143,7 +104,7 @@ public class CSVDataStream extends SensorDataStream {
             */
             Coordinate toPass = new Coordinate(accX, accY, accZ);
             myCache.add(size++,toPass);
-            for (StreamListener myListener : getMyListeners()) {
+            for (StreamListener myListener : myListeners) {
                 myListener.newSensorData(toPass);
             }
         }

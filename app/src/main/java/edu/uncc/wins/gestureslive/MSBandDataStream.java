@@ -39,15 +39,16 @@ import edu.uncc.wins.gestureslive.SensorDataStream;
  *
  * Created by jbandy3 on 6/15/2015.
  */
-public class MSBandDataStream extends SensorDataStream {
+public class MSBandDataStream implements SensorDataStream {
     private BandClient client;
     private Context context;
     private ArrayList<Coordinate> myCache;
+    private ArrayList<StreamListener> myListeners;
 
     public MSBandDataStream(Context context){
-        super();
         client = null;
         this.context = context.getApplicationContext();
+        myListeners = new ArrayList<StreamListener>();
     }
 
     public MSBandDataStream(){
@@ -56,9 +57,14 @@ public class MSBandDataStream extends SensorDataStream {
     }
 
 
+    @Override
+    public void addListener(StreamListener aListener) {
+        myListeners.add(aListener);
+    }
+
     public void startupStream() {
         System.out.println("Reached startup stream");
-        myCache = new ArrayList<Coordinate>(128);
+        myCache = new ArrayList<Coordinate>(256);
         new myTask().execute();
     }
 
@@ -79,8 +85,8 @@ public class MSBandDataStream extends SensorDataStream {
      * collected in the stream from the x, y, and z axes
      */
     public ArrayList<Coordinate> getCoordinateCache() {
-        List<Coordinate> trimmed =  myCache.subList(myCache.size()-128,myCache.size());
-        ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>(128);
+        List<Coordinate> trimmed =  myCache.subList(myCache.size()-256,myCache.size());
+        ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>(256);
         toReturn.addAll(trimmed);
         return toReturn;
     }
@@ -106,16 +112,17 @@ public class MSBandDataStream extends SensorDataStream {
             }
 
             Coordinate toPass = new Coordinate(accX,accY,accZ);
-            for(StreamListener myListener: getMyListeners()){
-                myListener.newSensorData(toPass);
+            for(StreamListener aListener: myListeners){
+                aListener.newSensorData(toPass);
             }
-            if(myCache.size() == 128){
+            if(myCache.size() == 256){
                 myCache.remove(0);
                 myCache.trimToSize();
             }
             myCache.add(toPass);
         }
     };
+
 
 
     /**

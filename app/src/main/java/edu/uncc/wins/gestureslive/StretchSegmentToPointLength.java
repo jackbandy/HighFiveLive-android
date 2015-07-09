@@ -13,10 +13,12 @@ import java.util.ArrayList;
 
 
 
-public class StretchTo128SegmentProcessor extends SegmentHandler {
+public class StretchSegmentToPointLength extends SegmentHandler {
+    private int desiredPointLength;
 
-    public StretchTo128SegmentProcessor(SegmentHandler nextHandler) {
+    public StretchSegmentToPointLength(SegmentHandler nextHandler, int pointLength) {
         super(nextHandler);
+        desiredPointLength = pointLength;
     }
 
     @Override
@@ -36,22 +38,20 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
 
 
 
-    private static ArrayList<Coordinate> pushToLeft(ArrayList<Coordinate> segmentPoints){
-        ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(128);
+    private ArrayList<Coordinate> pushToLeft(ArrayList<Coordinate> segmentPoints){
+        ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(desiredPointLength);
         Coordinate fluffCoordinate = new Coordinate(0.,0.,0.);
         int initialSize = segmentPoints.size();
-        int fluffPointsNeeded = 128 - initialSize;
+        int fluffPointsNeeded = desiredPointLength - initialSize;
         int currentSize = 0;
 
         //Add the actual segment points
-        //Log.v("TAG", "Old Points: " + segmentPoints.toString());
         toPass.addAll(currentSize, segmentPoints);
-        //Log.v("TAG", "New Points: " + toPass.toString());
 
         currentSize += initialSize;
 
         //Fill in the last part of the array
-        while(currentSize<128)
+        while(currentSize< desiredPointLength)
             toPass.add(currentSize++,fluffCoordinate);
 
         return toPass;
@@ -59,11 +59,11 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
 
 
 
-    private static ArrayList<Coordinate> keepAtCenter(ArrayList<Coordinate> segmentPoints){
-        ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(128);
+    private ArrayList<Coordinate> keepAtCenter(ArrayList<Coordinate> segmentPoints){
+        ArrayList<Coordinate> toPass = new ArrayList<Coordinate>(desiredPointLength);
         Coordinate fluffCoordinate = new Coordinate(0.,0.,0.);
         int initialSize = segmentPoints.size();
-        int fluffPointsNeeded = 128 - initialSize;
+        int fluffPointsNeeded = desiredPointLength - initialSize;
         int currentSize = 0;
 
         //Fill in the first part of the array
@@ -78,7 +78,7 @@ public class StretchTo128SegmentProcessor extends SegmentHandler {
         currentSize += initialSize;
 
         //Fill in the last part of the array
-        while(currentSize<128)
+        while(currentSize< desiredPointLength)
             toPass.add(currentSize++,fluffCoordinate);
 
         return toPass;

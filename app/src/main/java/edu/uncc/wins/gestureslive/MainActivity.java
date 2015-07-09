@@ -88,16 +88,16 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 Segmentor (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
-                GestureClassifier (who notifies the world)
+                BasicGestureClassifier (who notifies the world)
         */
 
         //Create the data stream
         myStream = new MSBandDataStream(getApplicationContext());
 
         //Build the rest of the chain-of-responsibility starting with the top link
-        GestureClassifier myClassifier = new GestureClassifier();
-        FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
-        StretchTo128SegmentProcessor myProcessor = new StretchTo128SegmentProcessor(myExtractor);
+        SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
+        //FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
+        StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myClassifier,140);
 
         //Custom constructor to pass MSBand for haptic feedback
         StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
@@ -117,14 +117,14 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 Segmentor from annotation (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
-                GestureClassifier (who notifies the world)
+                BasicGestureClassifier (who notifies the world)
         */
 
         AssetManager ast = getAssets();
         myStream = new CSVDataStream("trial0.csv", ast);
 
         //Build the rest of the chain-of-responsibility starting with the top link
-        GestureClassifier myClassifier = new GestureClassifier();
+        BasicGestureClassifier myClassifier = new BasicGestureClassifier();
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
@@ -171,18 +171,17 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         });
     }
 
-    @Override
-    public void newClassification(double[] featureVector, final String classification) {
+
+    public void didReceiveNewClassification(final String classification) {
         //final variables to be used in inner class
         final String tmpClassification = classification;
-        final double[] tmpFeatureVector = featureVector;
         //Log.v("TAG","reached newClassification in mainActivity");
 
             this.runOnUiThread(new Runnable() {
                 public void run() {
                     if(!hasDialogue && Constants.SHOW_DIALOGS)
                         showAlertWithTitleAndMessage(tmpClassification, "");
-                    if(Constants.VIBRATE_FOR_GESTURE && bandBtn.isEnabled());
+                    if(Constants.VIBRATE_FOR_GESTURE && bandBtn.isEnabled())
                         ((MSBandDataStream) myStream).vibrateBandOnce();
                     featureLabel.setText("Previous gesture: " + classification);
                     //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));

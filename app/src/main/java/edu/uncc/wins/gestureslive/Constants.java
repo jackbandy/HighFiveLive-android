@@ -11,6 +11,8 @@ public class Constants {
     public static final boolean VIBRATE_FOR_SEGMENT = false;
     public static final boolean VIBRATE_FOR_GESTURE = true;
 
+    public static final int COORDINATE_CACHE_SIZE = 256;
+
     public static final double[][] MODEL_SINGLE_POINT = {
             /*
             1. Celebratory Fist Pump

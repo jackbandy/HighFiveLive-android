@@ -3,55 +3,36 @@ package edu.uncc.wins.gestureslive;
 import java.util.ArrayList;
 
 /**
- * Abstract class for providing a stream of accelerometer data,
+ * Interface for providing a stream of accelerometer data,
  * uses the observer design pattern
  *
  * Created by jbandy3 on 6/15/2015.
  */
 
-public abstract class SensorDataStream {
-    private ArrayList<StreamListener> myListeners = new ArrayList<StreamListener>();
+public interface SensorDataStream {
 
     /**
-     * Constructor
+     * @param aListener the new listener
      */
-    public SensorDataStream(){
-        myListeners = new ArrayList<StreamListener>();
-    }
-
-
-    /**
-     * @param listener the new listener
-     */
-    public void addListener(StreamListener listener){
-        myListeners.add(listener);
-    }
-
-
-    /**
-     * Getter for listeners
-     * @return the arraylist of this class' listeners
-     */
-    public ArrayList<StreamListener> getMyListeners(){
-        return myListeners;
-    }
+    void addListener(StreamListener aListener);
 
 
     /**
      * Begins the data stream's processes
      */
-    abstract public void startupStream();
+    void startupStream();
+
 
     /**
      * Ends the data stream's processes
      */
-    abstract public void terminateStream();
+    void terminateStream();
 
 
     /**
      * Provides cache of recent data points for further analysis
-     * @return a double array with the 64 most recent data points
+     * @return an ArrayList of the most recent data points
      */
-    abstract public ArrayList<Coordinate> getCoordinateCache();
+    ArrayList<Coordinate> getCoordinateCache();
 
 }
