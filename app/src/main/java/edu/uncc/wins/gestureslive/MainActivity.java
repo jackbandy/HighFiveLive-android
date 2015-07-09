@@ -95,9 +95,10 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         myStream = new MSBandDataStream(getApplicationContext());
 
         //Build the rest of the chain-of-responsibility starting with the top link
-        SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
-        //FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
-        StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myClassifier,140);
+        //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
+        BasicGestureClassifier myClassifier = new BasicGestureClassifier();
+        FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
+        StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myExtractor,128);
 
         //Custom constructor to pass MSBand for haptic feedback
         StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);

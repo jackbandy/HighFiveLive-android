@@ -8,8 +8,8 @@ import java.util.Map;
  */
 public class Constants {
     public static final boolean SHOW_DIALOGS = false;
-    public static final boolean VIBRATE_FOR_SEGMENT = false;
-    public static final boolean VIBRATE_FOR_GESTURE = true;
+    public static final boolean VIBRATE_FOR_SEGMENT = true;
+    public static final boolean VIBRATE_FOR_GESTURE = false;
 
     public static final int COORDINATE_CACHE_SIZE = 256;
 

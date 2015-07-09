@@ -102,17 +102,18 @@ public class StdDevSegmentor implements StreamListener {
             segmentCoordinates.add(15,newCoordinate);
 
 
-            if(windowCount % 120 == 0){
+            if(windowCount % 112 == 0){
                 this.offsetDidOccur();
             }
 
 
             else if(windowCount % 16 == 0){
-
+                /*
                 Double[] current = newCoordinate.toArray();
                 Double[] previous = segmentCoordinates.get(14).toArray();
                 double average = ((current[0]+current[1]+current[2]) - (previous[0]+previous[1]+previous[2])) / 2;
                 trapezoidSum += average*1.0;
+                */
                 //Log.v("TAG", "\nIntegral: " + trapezoidSum + "\nStdev: " + stdDev(segmentCoordinates) + "\nPoint: " + totalCount);
 
 
@@ -144,7 +145,7 @@ public class StdDevSegmentor implements StreamListener {
         if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandOnce();
 
         int tmpSize = myStream.getCoordinateCache().size();
-        List<Coordinate> theList = myStream.getCoordinateCache().subList((tmpSize - (windowCount+20)), tmpSize);
+        List<Coordinate> theList = myStream.getCoordinateCache().subList((tmpSize - (windowCount+16)), tmpSize);
         ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
         toPass.addAll(theList);
         nextHandler.handleNewSegment(toPass, null);
