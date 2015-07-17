@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 Segmentor (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
-                BasicGestureClassifier (who notifies the world)
+                LogRegClassifier (who notifies the world)
         */
 
         //Create the data stream
@@ -99,7 +99,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
         //Build the rest of the chain-of-responsibility starting with the top link
         //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
-        BasicGestureClassifier myClassifier = new BasicGestureClassifier();
+        LogRegClassifier myClassifier = new LogRegClassifier();
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
         StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myExtractor,128);
 
@@ -121,14 +121,14 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 Segmentor from annotation (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
-                BasicGestureClassifier (who notifies the world)
+                LogRegClassifier (who notifies the world)
         */
 
 
         myStream = new CSVDataStream("trial0.csv", appAssets);
 
         //Build the rest of the chain-of-responsibility starting with the top link
-        BasicGestureClassifier myClassifier = new BasicGestureClassifier();
+        LogRegClassifier myClassifier = new LogRegClassifier();
         //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
 
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);

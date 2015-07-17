@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  * Created by jbandy3 on 6/16/2015.
  */
-public class BasicGestureClassifier extends SegmentHandler {
+public class LogRegClassifier extends SegmentHandler {
 
     private ArrayList<ClassificationListener> myListeners;
     private int totalGestures;
@@ -20,7 +20,7 @@ public class BasicGestureClassifier extends SegmentHandler {
     /**
      * Constructor. Since this is the highest level in the chain, no handler is needed
      */
-    public BasicGestureClassifier() {
+    public LogRegClassifier() {
         super();
         didAssert = false;
         totalGestures = 0;
@@ -71,8 +71,6 @@ public class BasicGestureClassifier extends SegmentHandler {
             logit = .0;
 
             for (int i=0; i<featureVector.length;i++)  {
-                //double term1 = (-1 * featureVector[i]) * Math.log(sigmoid(Constants.MODEL[j][i]));
-                //double term2 = (1 - featureVector[i]) * Math.log(1 - sigmoid(Constants.MODEL[j][i]));
                 logit += featureVector[i] * Constants.MODEL_SINGLE_POINT[j][i];
             }
             costs[j] = sigmoid(logit);

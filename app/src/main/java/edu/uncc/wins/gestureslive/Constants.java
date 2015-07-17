@@ -329,6 +329,7 @@ public class Constants {
     }
 
 
+
     public static double[][] txtTo2DArray(String fileName){
         AssetManager mng = MainActivity.appAssets;
         InputStream strm = null;
@@ -343,23 +344,29 @@ public class Constants {
         ArrayList<ArrayList<Double>> doublesArr = new ArrayList<ArrayList<Double>>();
 
         int linecount = 0;
+        int arraySizeCount = 0;
         while(scanner.hasNextLine()){
+            if(arraySizeCount == 0) {
+                doublesArr.add(linecount, new ArrayList<Double>());
+            }
+
             String line = scanner.nextLine();
-            doublesArr.add(new ArrayList<Double>());
             String[] columns = line.split("\\s+");
 
             for (int i=0; i<columns.length; i++) {
                 if(columns[i].contains("]")){
                     linecount++;
-                    break;
+                    arraySizeCount = 0;
+                    i = columns.length;
                 }
                 else if (!columns[i].contains("[") && (columns[i].trim().length() > 0)){
-                    doublesArr.get(linecount).add(Double.parseDouble(columns[i]));
+                    doublesArr.get(linecount).add(arraySizeCount++,Double.parseDouble(columns[i]));
                 }
             }
         }
 
         double[][] toReturn = new double[linecount][doublesArr.get(0).size()];
+        Log.v("TAG","dimensions (expect 9 x 60): " + linecount + " x " + doublesArr.get(0).size());
         for(int c = 0; c < linecount; c++){
             for(int j = 0; j < toReturn.length; j++)
                 toReturn[c][j] = doublesArr.get(c).get(j);
