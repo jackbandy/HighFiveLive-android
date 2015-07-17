@@ -113,10 +113,11 @@ public class FeatureExtractor extends SegmentHandler {
         double[][] yzCorr = new double[2][xArray.length];
         yzCorr[0] = yArray;
         yzCorr[1] = zArray;*/
-        Covariance myCov = new Covariance();
-        allFeatures.add(featCount++, myCov.covariance(xArray,yArray));
-        allFeatures.add(featCount++, myCov.covariance(xArray,zArray));
-        allFeatures.add(featCount++, myCov.covariance(yArray,zArray));
+        //Covariance myCov = new Covariance();
+        PearsonsCorrelation pCorr = new PearsonsCorrelation();
+        allFeatures.add(featCount++, pCorr.correlation(xArray, yArray));
+        allFeatures.add(featCount++, pCorr.correlation(xArray, zArray));
+        allFeatures.add(featCount++, pCorr.correlation(yArray,zArray));
         /*
         allFeatures.add(featCount++, new Covariance(xyCorr).getCovarianceMatrix().getEntry(0, 1));
         allFeatures.add(featCount++, new Covariance(xzCorr).getCovarianceMatrix().getEntry(0, 1));

@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -22,12 +23,13 @@ public class Constants {
 
     public static final int COORDINATE_CACHE_SIZE = 256;
 
+
     public static final double[][] MODEL_SINGLE_POINT;
     static {
         MODEL_SINGLE_POINT = txtTo2DArray("LogRegModel.txt");
     }
 
-    /*
+/*
     public static final double[][] MODEL_SINGLE_POINT = {
 
 //            1. Celebratory Fist Pump
@@ -367,9 +369,12 @@ public class Constants {
 
         double[][] toReturn = new double[linecount][doublesArr.get(0).size()];
         Log.v("TAG","dimensions (expect 9 x 60): " + linecount + " x " + doublesArr.get(0).size());
+
         for(int c = 0; c < linecount; c++){
-            for(int j = 0; j < toReturn.length; j++)
+            for(int j = 0; j < toReturn[0].length; j++)
                 toReturn[c][j] = doublesArr.get(c).get(j);
+            Log.v("TAG","Array " + c + ": " + Arrays.toString(toReturn[c]));
+
         }
 
         return toReturn;

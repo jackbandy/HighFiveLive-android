@@ -83,17 +83,18 @@ public class CSVDataStream implements SensorDataStream {
 
         @Override
         public void run() {
-            String line = "";
-            try {
-                line = reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            if (isStreaming) {
+                String line = "";
+                try {
+                    line = reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            List<String> theDoubles = Arrays.asList(line.split(","));
-            final double accX = Double.parseDouble(theDoubles.get(1));
-            final double accY = Double.parseDouble(theDoubles.get(2));
-            final double accZ = Double.parseDouble(theDoubles.get(3));
+                List<String> theDoubles = Arrays.asList(line.split(","));
+                final double accX = Double.parseDouble(theDoubles.get(1));
+                final double accY = (-1) * Double.parseDouble(theDoubles.get(2));
+                final double accZ = Double.parseDouble(theDoubles.get(3));
             /*
             final double accX = Double.parseDouble(theDoubles.get(count++));
             final double accY = Double.parseDouble(theDoubles.get(count++));
@@ -101,18 +102,19 @@ public class CSVDataStream implements SensorDataStream {
 
             System.out.println("x: " + accX + " y: " + accY + " z: " + accZ);
             */
-            Coordinate toPass = new Coordinate(accX, accY, accZ);
-            if(size < Constants.COORDINATE_CACHE_SIZE)
-                myCache.add(size++,toPass);
-            else {
-                size++;
-                myCache.remove(0);
-                myCache.trimToSize();
-                myCache.add(toPass);
-            }
+                Coordinate toPass = new Coordinate(accX, accY, accZ);
+                if (size < Constants.COORDINATE_CACHE_SIZE)
+                    myCache.add(size++, toPass);
+                else {
+                    size++;
+                    myCache.remove(0);
+                    myCache.trimToSize();
+                    myCache.add(toPass);
+                }
 
-            for (StreamListener myListener : myListeners) {
-                myListener.newSensorData(toPass);
+                for (StreamListener myListener : myListeners) {
+                    myListener.newSensorData(toPass);
+                }
             }
         }
     }

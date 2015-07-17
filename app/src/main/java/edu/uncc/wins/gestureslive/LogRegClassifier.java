@@ -66,12 +66,11 @@ public class LogRegClassifier extends SegmentHandler {
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
         double[] costs = new double[9];
         double logit;
-        //for each potential gesture
         for(int j = 0; j < 9; j++){
-            logit = .0;
+            logit = 0.0;
 
             for (int i=0; i<featureVector.length;i++)  {
-                logit += featureVector[i] * Constants.MODEL_SINGLE_POINT[j][i];
+                logit += (featureVector[i] * Constants.MODEL_SINGLE_POINT[j][i]);
             }
             costs[j] = sigmoid(logit);
         }

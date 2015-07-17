@@ -52,6 +52,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                     bandBtn.setText("START MS Band stream");
                     dataBtn.setEnabled(true);
                 } else {
+                    featureLabel.setText("No gestures detected yet ");
                     isStreaming = true;
                     //Start tracking the data
                     buildSystemForBand();
@@ -72,6 +73,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                     dataBtn.setText("START csv file stream");
                     bandBtn.setEnabled(true);
                 } else {
+                    featureLabel.setText("No gestures detected yet ");
                     isStreaming = true;
                     //Start tracking the data
                     buildSystemForCSV();
