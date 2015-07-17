@@ -1,7 +1,16 @@
 package edu.uncc.wins.gestureslive;
 
+import android.content.res.AssetManager;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by jbandy3 on 6/29/2015.
@@ -13,18 +22,24 @@ public class Constants {
 
     public static final int COORDINATE_CACHE_SIZE = 256;
 
+    public static final double[][] MODEL_SINGLE_POINT;
+    static {
+        MODEL_SINGLE_POINT = txtTo2DArray("LogRegModel.txt");
+    }
+
+    /*
     public static final double[][] MODEL_SINGLE_POINT = {
-            /*
-            1. Celebratory Fist Pump
-            2. High Wave
-            3. Hand Shake
-            4. Fist Bump
-            5. Low Wave
-            6. Point
-            7. Motion Over
-            8. High Five
-            9. Applause/Clap
-             */
+
+//            1. Celebratory Fist Pump
+//            2. High Wave
+//            3. Hand Shake
+//            4. Fist Bump
+//            5. Low Wave
+//            6. Point
+//            7. Motion Over
+//            8. High Five
+//            9. Applause/Clap
+
             {-0.2290525,0.97083804,0.11991338,0.98025067,0.04264776,-0.04114591,2.15193028,0.35774908,-1.64578298,0.87044627,-0.20938853,-1.23662649,2.02001965,-1.71910513,-0.41485726,-34.0598684,0.,-13.30992055,3.72642115,-0.10527761,0.09559909,-0.01223023,0.11251629,0.00197206,-0.29130338,-1.34390105,-0.84219531,-3.70930686,-8.93824498,-8.82752421,0.01375059,0.00512756,-0.02945139,0.0116799,0.00463818,-0.01135656,-0.03107152,0.02095998,0.07111233,0.01687299,-0.0120072,0.00510851,-0.00347153,0.01211053,0.0036966,0.00708099,-0.06293752,0.01677317,0.01349599,-0.01529285,0.08243593,0.04323816,-0.02468052,-0.03086768,0.05063492,0.05743087,-0.08290345,-0.01622769,-0.14492523,-0.02277652},
             {0.15631586,-0.09901359,0.77288315,-1.61395343,-0.02059023,0.19307921,0.02597361,-3.56513533,-3.02103721,-0.15996391,0.16092074,-1.44666162,1.18064077,-3.25007836,0.42771635,-11.436591,0.2712715,4.29995453,-0.84084683,-1.15678367,-0.5388325,0.01929445,-0.09031883,-0.07280908,-0.39809863,-0.77584818,-1.87956132,-19.62435676,2.63025399,8.23626697,-0.00163757,-0.02084513,-0.03398032,0.00735766,0.00482725,-0.01070054,0.0058675,-0.00137195,0.01080867,-0.01784295,-0.05220092,0.0234299,0.08262147,0.04263103,-0.02990984,0.08986935,0.07008008,0.03904521,0.03989944,-0.00929631,-0.02339363,0.02376336,-0.0265254,0.02719128,-0.02042785,0.02018051,0.03412583,0.0527472,0.02611368,-0.06557722},
             {-0.15624313,-0.79802422,-0.42298589,-0.35187808,0.38626999,-0.002325,-1.62261251,0.48797365,-0.23850493,-1.25406253,0.94769889,-3.08472871,0.25551149,0.19360223,2.16186249,0.,3.64422746,5.6424065,0.91071797,0.03366587,-0.0464523,0.03985953,-0.16248024,-0.02228394,-0.81186082,-0.03923121,-0.49384065,10.37343299,-2.45930528,3.62785454,-0.01276299,-0.0013903,-0.01010523,0.00434973,0.01849558,-0.0064601,0.00825468,-0.03649104,-0.08005382,-0.06945785,-0.07261959,-0.01705944,-0.04005992,0.00364017,0.00212815,-0.04899613,-0.12519901,-0.07917272,-0.05226006,-0.02343105,0.02181548,0.06664689,-0.01527776,-0.06765689,-0.04705123,-0.02260309,-0.01851797,0.01443496,0.01140824,-0.01638762},
@@ -36,10 +51,11 @@ public class Constants {
             {-0.07764603,0.95217496,0.72757861,-1.90424901,-0.47445405,0.71311952,0.71173243,0.03011732,-0.37749389,-0.03065505,-2.42499631,2.39861391,-0.01188931,-1.41960296,-0.68836229,26.38911732,15.95152098,12.04733984,0.21256619,0.17836787,1.61864459,-0.08372622,0.01244685,-0.16561827,-0.4610053,-0.8646239,-1.59517922,0.,3.05412538,14.00814394,-0.00633261,-0.00041264,0.00144648,-0.00008645,-0.00826649,0.04074263,-0.01368981,-0.00440537,-0.00198715,-0.05827458,-0.05172523,-0.07957521,-0.07564945,0.07354637,0.00020207,0.01314127,-0.09342078,0.02918428,0.00252117,0.00035863,0.02229949,-0.11342964,-0.01066395,0.03935729,-0.06019072,-0.0291646,-0.03742845,-0.03606592,0.00174141,-0.0043746}
 
     };
+*/
 
     public static final Map<Integer, String> SINGLE_POINT_INDECES_MAP;
-    static
-    {
+
+    static {
         SINGLE_POINT_INDECES_MAP = new HashMap<Integer, String>();
         SINGLE_POINT_INDECES_MAP.put(0, "FIST PUMP");
         SINGLE_POINT_INDECES_MAP.put(1, "HIGH WAVE");
@@ -51,7 +67,6 @@ public class Constants {
         SINGLE_POINT_INDECES_MAP.put(7, "HIGH FIVE");
         SINGLE_POINT_INDECES_MAP.put(8, "APPLAUSE");
     }
-
 
     public static final double[][] MODEL = {
 
@@ -82,7 +97,10 @@ public class Constants {
             {-0.47241774,-1.78109824,-0.53091513,1.39937082,0.09224798,0.73932614,-0.35685394,-1.9163714,-1.26065803,-0.35218586,-1.38943978,0.01889077,-3.36604743,-1.11739937,0.96284954,11.41473347,12.66422676,-2.41093961,0.73771943,0.41794271,0.36739754,-0.50783306,-0.20220359,0.03302884,-0.38323832,-0.14861098,0.,0.,-11.74182581,-7.50105983,-0.00033437,-0.01056733,-0.01525324,0.00023086,-0.01113017,-0.01258425,-0.01095572,-0.00975423,-0.06986632,0.04432955,0.04023363,0.01866697,-0.01873792,-0.00728146,-0.01703036,0.01261197,0.02782477,-0.06856926,0.00982087,-0.07780667,-0.03486529,-0.05841886,-0.06559427,-0.05774205,0.04628162,-0.02579347,0.03991698,0.01756507,-0.00497692,-0.04103957},
             {-0.2406996,1.16660424,0.61163954,-2.61704341,-0.36772792,1.29100008,-0.0362966,0.22692143,-0.6577866,0.50919137,-2.8358377,3.48170352,-0.11917055,-1.14746384,-1.15668772,28.50595056,23.84482752,7.13737251,0.47595546,0.14481286,2.32838452,-0.03999252,0.04976984,-0.33485181,0.01913385,-0.46367069,-3.24488686,-0.80625342,1.32923709,18.05502746,0.00204314,0.00523942,-0.01288912,0.00362361,-0.01152189,0.0457372,-0.0190108,0.00567279,0.00994671,-0.04553673,-0.08685343,-0.10548531,-0.12091427,0.13374522,-0.00383552,0.0283589,-0.11592567,0.01915114,0.00216783,0.02243227,0.02792117,-0.12847227,-0.01731511,0.03810546,-0.11852609,-0.05876423,-0.04665076,-0.05796638,0.02539006,-0.02894757}
     };
-    public static final int[] trial0StartPoints = {2070,
+
+
+    public static final int[] trial0StartPoints = {
+            2069,
             2304,
             2538,
             3174,
@@ -277,4 +295,77 @@ public class Constants {
             78416,
             78852,
             79371};
+
+
+    public static double[] txtTo1DArray(String fileName) {
+        AssetManager mng = MainActivity.appAssets;
+        InputStream strm = null;
+        try {
+            strm = mng.open(fileName);
+        } catch (IOException e) {
+            Log.v("TAG", "IOException :D");
+        }
+
+        Scanner scanner = new Scanner(strm);
+        ArrayList<Double> doublesArrayList = new ArrayList<Double>();
+
+        int linecount = 0;
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            linecount++;
+
+            String[] columns = line.split("\\s+");
+            for (int i=0; i<columns.length; i++) {
+                if (!columns[i].contains("[") && !columns[i].contains("]") && (columns[i].trim().length() > 0)){
+                    doublesArrayList.add(Double.parseDouble(columns[i]));
+                }
+            }
+        }
+
+        double[] toReturn = new double[doublesArrayList.size()];
+        for(int i = 0; i < toReturn.length; i++)
+            toReturn[i] = doublesArrayList.get(i);
+        return toReturn;
+    }
+
+
+    public static double[][] txtTo2DArray(String fileName){
+        AssetManager mng = MainActivity.appAssets;
+        InputStream strm = null;
+        try {
+            strm = mng.open(fileName);
+        } catch (IOException e) {
+            Log.v("TAG", "IOException :D");
+        }
+
+        Scanner scanner = new Scanner(strm);
+
+        ArrayList<ArrayList<Double>> doublesArr = new ArrayList<ArrayList<Double>>();
+
+        int linecount = 0;
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            doublesArr.add(new ArrayList<Double>());
+            String[] columns = line.split("\\s+");
+
+            for (int i=0; i<columns.length; i++) {
+                if(columns[i].contains("]")){
+                    linecount++;
+                    break;
+                }
+                else if (!columns[i].contains("[") && (columns[i].trim().length() > 0)){
+                    doublesArr.get(linecount).add(Double.parseDouble(columns[i]));
+                }
+            }
+        }
+
+        double[][] toReturn = new double[linecount][doublesArr.get(0).size()];
+        for(int c = 0; c < linecount; c++){
+            for(int j = 0; j < toReturn.length; j++)
+                toReturn[c][j] = doublesArr.get(c).get(j);
+        }
+
+        return toReturn;
+    }
+
 }

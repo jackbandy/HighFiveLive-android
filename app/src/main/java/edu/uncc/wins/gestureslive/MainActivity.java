@@ -24,10 +24,13 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     private Boolean isStreaming;
     private SensorDataStream myStream;
 
+    public static AssetManager appAssets;
+
     private boolean hasDialogue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        appAssets = getAssets();
         hasDialogue = false;
         isStreaming = false;
         super.onCreate(savedInstanceState);
@@ -121,8 +124,8 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 BasicGestureClassifier (who notifies the world)
         */
 
-        AssetManager ast = getAssets();
-        myStream = new CSVDataStream("trial0.csv", ast);
+
+        myStream = new CSVDataStream("trial0.csv", appAssets);
 
         //Build the rest of the chain-of-responsibility starting with the top link
         BasicGestureClassifier myClassifier = new BasicGestureClassifier();
@@ -166,7 +169,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
     @Override
     public void newSensorData(Coordinate newCoordinate) {
-        final String toPrint = newCoordinate.toString();
+        final String toPrint = newCoordinate.toShortString();
         //System.out.print(toPrint);
         this.runOnUiThread(new Runnable() {
             public void run() {

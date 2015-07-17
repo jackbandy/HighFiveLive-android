@@ -101,7 +101,6 @@ public class StdDevSegmentor implements StreamListener {
             segmentCoordinates.trimToSize();
             segmentCoordinates.add(15,newCoordinate);
 
-
             if(windowCount % 112 == 0){
                 this.offsetDidOccur();
             }

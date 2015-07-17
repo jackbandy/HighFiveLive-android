@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public interface GestureClassifier {
 
+
     /**
      * Called when a GestureClassifier has confidently detected a new gesture
      * @param classification the qualitative classification of the gesture

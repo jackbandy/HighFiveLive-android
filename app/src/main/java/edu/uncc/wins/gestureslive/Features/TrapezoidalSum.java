@@ -9,10 +9,14 @@ public class TrapezoidalSum {
         double sum = 0;
 
         for (int i = 0; i < aFunction.length-1; i++) {
-            double x = (aFunction[i] + aFunction[i+1] / 2);
+            double x = ((aFunction[i] + aFunction[i+1]) / 2);
             sum+=(x*stepSize);
         }
 
         return sum;
+    }
+
+    public static double sumFromArray(double[] aFunction){
+        return sumFromArrayWithStepSize(aFunction,1.0);
     }
 }

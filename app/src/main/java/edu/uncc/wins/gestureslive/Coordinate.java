@@ -22,6 +22,10 @@ public class Coordinate {
         return "x: " + x + "\ny: " + y + "\nz: " + z;
     }
 
+    public String toShortString(){
+        return String.format("x: %.2f", x) + String.format("\ny: %.2f",y) + String.format("\nz: %.2f", z);
+    }
+
     public Double getMagnitude(){
         return magnitude;
     }

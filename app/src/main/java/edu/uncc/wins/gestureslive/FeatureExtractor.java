@@ -5,10 +5,12 @@ import android.util.Log;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.stat.*;
+import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.transform.DftNormalization;
@@ -45,6 +47,11 @@ public class FeatureExtractor extends SegmentHandler {
 
 
     public static double[] featuresFromWindow(List<Coordinate> window){
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        Log.v("TAG", "Beginning extraction: " + startTime);
+
+
+
         ArrayList<Double> allFeatures = new ArrayList<Double>();
         int featCount = 0;
 
@@ -91,13 +98,30 @@ public class FeatureExtractor extends SegmentHandler {
 
 
         Log.v("TAG", "length of arrays: " + xArray.length + "," + yArray.length + "," + zArray.length);
+        assert(xArray.length == yArray.length);
+        assert(yArray.length == zArray.length);
+
 
         //pairwise correlation
-        PearsonsCorrelation pCorr = new PearsonsCorrelation();
-        allFeatures.add(featCount++, pCorr.correlation(xArray,yArray));
-        allFeatures.add(featCount++, pCorr.correlation(xArray,zArray));
-        allFeatures.add(featCount++, pCorr.correlation(yArray,zArray));
-
+        /*
+        double[][] xyCorr = new double[2][xArray.length];
+        xyCorr[0] = xArray;
+        xyCorr[1] = yArray;
+        double[][] xzCorr = new double[2][xArray.length];
+        xzCorr[0] = xArray;
+        xzCorr[1] = zArray;
+        double[][] yzCorr = new double[2][xArray.length];
+        yzCorr[0] = yArray;
+        yzCorr[1] = zArray;*/
+        Covariance myCov = new Covariance();
+        allFeatures.add(featCount++, myCov.covariance(xArray,yArray));
+        allFeatures.add(featCount++, myCov.covariance(xArray,zArray));
+        allFeatures.add(featCount++, myCov.covariance(yArray,zArray));
+        /*
+        allFeatures.add(featCount++, new Covariance(xyCorr).getCovarianceMatrix().getEntry(0, 1));
+        allFeatures.add(featCount++, new Covariance(xzCorr).getCovarianceMatrix().getEntry(0, 1));
+        allFeatures.add(featCount++, new Covariance(yzCorr).getCovarianceMatrix().getEntry(0, 1));
+*/
 
         //zero crossing rate
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(xArray,128));
@@ -131,9 +155,9 @@ public class FeatureExtractor extends SegmentHandler {
 
 
         //trapezoidal sum
-        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(xArray,1));
-        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(yArray,1));
-        allFeatures.add(featCount++, TrapezoidalSum.sumFromArrayWithStepSize(zArray,1));
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArray(xArray));
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArray(yArray));
+        allFeatures.add(featCount++, TrapezoidalSum.sumFromArray(zArray));
 
 
         //signal energy
@@ -156,6 +180,9 @@ public class FeatureExtractor extends SegmentHandler {
             allFeatures.add(featCount++,(double)yCoeff[i]);
         for(int i = 0; i < numberOfCoefficients; i++)
             allFeatures.add(featCount++,(double)zCoeff[i]);
+
+
+        Log.v("TAG", "Ended extraction, duration: " + (startTime - Calendar.getInstance().getTimeInMillis()));
 
 
         //when handling a segment from this link up, a feature vector will be included

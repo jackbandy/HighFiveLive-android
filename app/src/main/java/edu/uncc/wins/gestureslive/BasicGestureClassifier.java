@@ -15,15 +15,26 @@ public class BasicGestureClassifier extends SegmentHandler {
 
     private ArrayList<ClassificationListener> myListeners;
     private int totalGestures;
+    boolean didAssert;
 
     /**
      * Constructor. Since this is the highest level in the chain, no handler is needed
      */
     public BasicGestureClassifier() {
         super();
+        didAssert = false;
         totalGestures = 0;
         myListeners = new ArrayList<ClassificationListener>();
     }
+
+    private static boolean almostEquals(double val1, double val2){
+        double epsilon = 0.05;
+        if ((val1 <= ( val2 - epsilon )) ||  ( val1 >= ( val2 + epsilon ) )) {
+            return false;
+        }
+        return true;
+    }
+
 
 
     /**
@@ -38,6 +49,18 @@ public class BasicGestureClassifier extends SegmentHandler {
         //assert featureVector != null;
         Log.v("TAG", "Features: " + Arrays.toString(featureVector));
         //classify the segment and let the world know about it
+
+        if(!didAssert){
+            double[] toCompare = Constants.txtTo1DArray("Gesture0Features.txt");
+            for(int i = 0; i < featureVector.length; i++){
+                if (!almostEquals(featureVector[i],toCompare[i])){
+                    Log.v("TAG","Feature " + i + ": " + featureVector[i] + " != " + toCompare[i]);
+                }
+            }
+
+            didAssert = true;
+        }
+
 
 
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
