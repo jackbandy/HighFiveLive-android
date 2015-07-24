@@ -126,6 +126,13 @@ public class CSVDataStream implements SensorDataStream {
     }
 
     public ArrayList<Coordinate> getCoordinateCache() {
-        return (ArrayList<Coordinate>) myCache.subList(size-128,size);
+        Log.v("TAG", "C");
+        List<Coordinate> theList = myCache.subList(myCache.size() - 128, myCache.size());
+        Log.v("TAG", "d");
+        ArrayList<Coordinate> toPass = new ArrayList<>(128);
+        Log.v("TAG", "e");
+        toPass.addAll(theList);
+        Log.v("TAG", "f");
+        return toPass;
     }
 }

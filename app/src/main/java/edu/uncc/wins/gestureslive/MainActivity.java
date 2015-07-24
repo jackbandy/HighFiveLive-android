@@ -90,7 +90,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     public void buildSystemForBand(){
         /*
                 SensorDataStream from MSBand (reports to...)
-                Segmentor (who listens to ^, and reports to...)
+                StdDevSegmentor (who listens to ^, and reports to...)
                 SegmentProcessor (who reports to...)
                 FeatureExtractor (who reports to...)
                 LogRegClassifier (who notifies the world)
@@ -106,7 +106,8 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myExtractor,128);
 
         //Custom constructor to pass MSBand for haptic feedback
-        StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
+        AccMagSegmentor mySegmentor = new AccMagSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
+        //StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
 
         myStream.addListener(mySegmentor);
         myStream.addListener(this);
@@ -137,10 +138,11 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
         //Create a segmentor that listens to the stream and reports to the processor
-        SegmentorFromAnnotation annotationSegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
+        AccMagSegmentor mySegmentor = new AccMagSegmentor(myStream, myProcessor);
+        //SegmentorFromAnnotation mySegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
 
 
-        myStream.addListener(annotationSegmentor);
+        myStream.addListener(mySegmentor);
         myStream.addListener(this);
         myClassifier.addListener(this);
     }
