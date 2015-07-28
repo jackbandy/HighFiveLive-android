@@ -38,17 +38,17 @@ public class FeatureExtractor extends SegmentHandler {
 
 
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
-        Log.v("TAG", "reached feature extractor");
+        //Log.v("TAG", "reached feature extractor");
         //extract the features!
         myNextHandler.handleNewSegment(segmentPoints, featuresFromWindow(segmentPoints));
 
-        Log.v("TAG", "pushing to classifier from extractor");
+        //Log.v("TAG", "pushing to classifier from extractor");
     }
 
 
     public static double[] featuresFromWindow(List<Coordinate> window){
         long startTime = Calendar.getInstance().getTimeInMillis();
-        Log.v("TAG", "Beginning extraction: " + startTime);
+        //Log.v("TAG", "Beginning extraction: " + startTime);
 
 
 
@@ -62,8 +62,7 @@ public class FeatureExtractor extends SegmentHandler {
         double[] zArray = new double[numberOfPoints];
 
 
-        Log.v("TAG", "reached feature extractor 1");
-
+        //Log.v("TAG", "reached feature extractor 1");
         //extract raw doubles from the Coordinates
         for(int index = 0; index < numberOfPoints; index++) {
             Double[] retrieved = window.get(index).toArray();
@@ -72,7 +71,7 @@ public class FeatureExtractor extends SegmentHandler {
             zArray[index] = retrieved[2];
         }
 
-        Log.v("TAG", "reached feature extractor 2");
+        //Log.v("TAG", "reached feature extractor 2");
         //Initialize a stats library for each axis
         DescriptiveStatistics xStats = new DescriptiveStatistics(xArray);
         DescriptiveStatistics yStats = new DescriptiveStatistics(yArray);
@@ -89,31 +88,22 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, xStats.getMean());
         allFeatures.add(featCount++, yStats.getMean());
         allFeatures.add(featCount++, zStats.getMean());
+        //Log.v("TAG", "MEANS " + xStats.getMean() + "," + yStats.getMean() + "," + zStats.getMean());
 
 
         //stdev
         allFeatures.add(featCount++, xStats.getStandardDeviation());
         allFeatures.add(featCount++, yStats.getStandardDeviation());
         allFeatures.add(featCount++, zStats.getStandardDeviation());
+        //Log.v("TAG", "DEVS " + xStats.getStandardDeviation() + "," + yStats.getStandardDeviation() + "," + zStats.getStandardDeviation());
 
 
-        Log.v("TAG", "length of arrays: " + xArray.length + "," + yArray.length + "," + zArray.length);
+        //Log.v("TAG", "length of arrays: " + xArray.length + "," + yArray.length + "," + zArray.length);
         assert(xArray.length == yArray.length);
         assert(yArray.length == zArray.length);
 
 
         //pairwise correlation
-        /*
-        double[][] xyCorr = new double[2][xArray.length];
-        xyCorr[0] = xArray;
-        xyCorr[1] = yArray;
-        double[][] xzCorr = new double[2][xArray.length];
-        xzCorr[0] = xArray;
-        xzCorr[1] = zArray;
-        double[][] yzCorr = new double[2][xArray.length];
-        yzCorr[0] = yArray;
-        yzCorr[1] = zArray;*/
-        //Covariance myCov = new Covariance();
         PearsonsCorrelation pCorr = new PearsonsCorrelation();
         allFeatures.add(featCount++, pCorr.correlation(xArray, yArray));
         allFeatures.add(featCount++, pCorr.correlation(xArray, zArray));
@@ -183,12 +173,12 @@ public class FeatureExtractor extends SegmentHandler {
             allFeatures.add(featCount++,(double)zCoeff[i]);
 
 
-        Log.v("TAG", "Ended extraction, duration: " + (startTime - Calendar.getInstance().getTimeInMillis()));
+        //Log.v("TAG", "Ended extraction, duration: " + (startTime - Calendar.getInstance().getTimeInMillis()));
 
 
         //when handling a segment from this link up, a feature vector will be included
         double[] toReturn = new double[featCount];
-        Log.v("TAG", "total features: " + featCount);
+        //Log.v("TAG", "total features: " + featCount);
 
         for(int i = 0; i < toReturn.length; i++)
             toReturn[i] = allFeatures.get(i);

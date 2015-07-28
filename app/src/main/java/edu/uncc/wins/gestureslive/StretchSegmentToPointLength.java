@@ -28,12 +28,12 @@ public class StretchSegmentToPointLength extends SegmentHandler {
      */
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         //process the data, features not yet extracted at this point
-        Log.v("TAG", "RECEIVED segment from segmentor");
+        //Log.v("TAG", "RECEIVED segment from segmentor");
 
         //myNextHandler.handleNewSegment(keepAtCenter(segmentPoints), null);
         myNextHandler.handleNewSegment(pushToLeft(segmentPoints), null);
 
-        Log.v("TAG", "PUSHED to handler from preprocessor");
+        //Log.v("TAG", "PUSHED to handler from preprocessor");
     }
 
 

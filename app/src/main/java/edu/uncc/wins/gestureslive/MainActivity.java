@@ -40,8 +40,13 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         dataBtn = (Button) findViewById(R.id.dataBtn);
         bandBtn = (Button) findViewById(R.id.bandBtn);
         txtView = (TextView) findViewById(R.id.txtView);
-        featureLabel = (TextView) findViewById(R.id.featView);
 
+        if(Constants.DEMO_MODE) {
+            featureLabel = (TextView) findViewById(R.id.demoView);
+        }
+        else{
+            featureLabel = (TextView) findViewById(R.id.featView);
+        }
 
         bandBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,7 +199,14 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                         showAlertWithTitleAndMessage(tmpClassification, "");
                     if(Constants.VIBRATE_FOR_GESTURE && bandBtn.isEnabled())
                         ((MSBandDataStream) myStream).vibrateBandOnce();
-                    featureLabel.setText("Previous gesture: " + classification);
+
+
+                    if(Constants.DEMO_MODE) {
+                        featureLabel.setText(classification);
+                    }
+                    else{
+                        featureLabel.setText("Previous gesture:\n " + classification);
+                    }
                     //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
                     //featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
                 }

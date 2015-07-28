@@ -19,13 +19,11 @@ public class AccMagSegmentor implements StreamListener {
     private final double ACC_ONSET_THRESHOLD = 1.1;
     private final double ACC_OFFSET_THRESHOLD = 1.5;
     private final double MIN_GESTURE_DURATION = 48;
-    private final int SAMPLE_WINDOW_SIZE = 8;
-
+    private final int SAMPLE_WINDOW_SIZE = 24;
 
     private SegmentHandler nextHandler;
     private SensorDataStream myStream;
     private ArrayList<Coordinate> segmentCoordinates;
-
 
     private int windowCount;
     private long totalCount;
@@ -56,7 +54,6 @@ public class AccMagSegmentor implements StreamListener {
 
 
     public double avgMag(ArrayList<Coordinate> aWindow){
-        //Standard deviation loop from StackOverflow
         double sum = 0;
 
         for (Coordinate c: aWindow) {
@@ -76,7 +73,7 @@ public class AccMagSegmentor implements StreamListener {
         if(!isSegmenting){
             //Not currently tracking a gesture, start tracking if threshold is crossed
             if (windowCount == SAMPLE_WINDOW_SIZE){
-                //
+                //make sure we've collected enough points
                 segmentCoordinates.remove(0);
                 segmentCoordinates.trimToSize();
                 segmentCoordinates.add(SAMPLE_WINDOW_SIZE - 1,newCoordinate);
@@ -88,12 +85,10 @@ public class AccMagSegmentor implements StreamListener {
                 segmentCoordinates.add(newCoordinate);
                 windowCount++;
             }
-
         }
 
-
         else {
-            //Currently tracking a gesture,
+            //Currently tracking a gesture
             windowCount++;
             segmentCoordinates.remove(0);
             segmentCoordinates.trimToSize();
@@ -102,49 +97,33 @@ public class AccMagSegmentor implements StreamListener {
             if(windowCount % (128 - SAMPLE_WINDOW_SIZE) == 0){
                 this.offsetDidOccur();
             }
-
-            else if(windowCount % SAMPLE_WINDOW_SIZE == 0){
-                //if (avgMag(segmentCoordinates) < ACC_OFFSET_THRESHOLD && windowCount > MIN_GESTURE_DURATION{
-                if (windowCount == 112){
-
-                        //end the segment if energy has leveled off
-                    //AND the window is at least 48 points
-                    this.offsetDidOccur();
-                }
-            }
-
         }
-
-
     }
 
 
     private void onsetDidOccur(){
         isSegmenting = true;
-        Log.v("TAG", "STARTED segmenting");
+        //Log.v("TAG", "STARTED segmenting");
 
         if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandTwice();
     }
 
 
     private void offsetDidOccur(){
-        Log.v("TAG", "STOPPED segmenting");
+        //Log.v("TAG", "STOPPED segmenting");
 
         if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandOnce();
 
-        Log.v("TAG", "C");
         int tmpSize = myStream.getCoordinateCache().size();
         List<Coordinate> theList = myStream.getCoordinateCache().subList((tmpSize - (128)), tmpSize);
         ArrayList<Coordinate> toPass = new ArrayList<>(windowCount);
         toPass.addAll(theList);
         nextHandler.handleNewSegment(toPass, null);
-        Log.v("TAG", "A");
 
 
         windowCount = 0;
         segmentCoordinates.clear();
         isSegmenting = false;
-        Log.v("TAG", "B");
 
     }
 

@@ -47,8 +47,11 @@ public class LogRegClassifier extends SegmentHandler {
      */
     void handleNewSegment(ArrayList<Coordinate> segmentPoints, double[] featureVector) {
         //assert featureVector != null;
-        Log.v("TAG", "Features: " + Arrays.toString(featureVector));
+        //Log.v("TAG", "Features: " + Arrays.toString(featureVector));
         //classify the segment and let the world know about it
+
+        /*
+        //USED FOR VERIFYING FEATURE EXTRACTION
 
         if(!didAssert){
             double[] toCompare = Constants.txtTo1DArray("Gesture0Features.txt");
@@ -60,7 +63,7 @@ public class LogRegClassifier extends SegmentHandler {
 
             didAssert = true;
         }
-
+*/
 
 
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------
@@ -90,8 +93,12 @@ public class LogRegClassifier extends SegmentHandler {
         }
 
 
-        for(ClassificationListener aListener : myListeners){
-            aListener.didReceiveNewClassification("Detected " + indToGesture(maxInd) + " as gesture number " + totalGestures++  + "\n\n Candidates: " + candidates);
+        for(ClassificationListener aListener : myListeners) {
+            if (Constants.DEMO_MODE) {
+                aListener.didReceiveNewClassification(indToGesture(maxInd));
+            } else {
+                aListener.didReceiveNewClassification("Detected " + indToGesture(maxInd) + " as gesture number " + totalGestures++  + "\n\n Candidates: " + candidates);
+            }
         }
     }
 

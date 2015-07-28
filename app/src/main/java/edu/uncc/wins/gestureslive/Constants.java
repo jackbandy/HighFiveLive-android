@@ -21,6 +21,9 @@ public class Constants {
     public static final boolean VIBRATE_FOR_SEGMENT = true;
     public static final boolean VIBRATE_FOR_GESTURE = false;
 
+    public static final boolean DEMO_MODE = true;
+    //true: huge labels, no statistics in classification report
+
     public static final int COORDINATE_CACHE_SIZE = 256;
 
 
@@ -368,12 +371,12 @@ public class Constants {
         }
 
         double[][] toReturn = new double[linecount][doublesArr.get(0).size()];
-        Log.v("TAG","dimensions (expect 9 x 60): " + linecount + " x " + doublesArr.get(0).size());
+        //Log.v("TAG","dimensions (expect 9 x 60): " + linecount + " x " + doublesArr.get(0).size());
 
         for(int c = 0; c < linecount; c++){
             for(int j = 0; j < toReturn[0].length; j++)
                 toReturn[c][j] = doublesArr.get(c).get(j);
-            Log.v("TAG","Array " + c + ": " + Arrays.toString(toReturn[c]));
+            //Log.v("TAG","Array " + c + ": " + Arrays.toString(toReturn[c]));
 
         }
 

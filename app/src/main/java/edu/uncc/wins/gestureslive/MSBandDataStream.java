@@ -105,10 +105,16 @@ public class MSBandDataStream implements SensorDataStream {
             accX = accY = accZ = 0;
 
             if (event != null) {
+                accX = (-1) * event.getAccelerationX();
+                accY = (-1) * event.getAccelerationY();
+                accZ = (1) * event.getAccelerationZ();
+
+                /*
                 accX = event.getAccelerationX();
                 //flip y-axis to fit our model
                 accY = (-1) * event.getAccelerationY();
                 accZ = event.getAccelerationZ();
+                */
             }
 
             Coordinate toPass = new Coordinate(accX, accY, accZ);
