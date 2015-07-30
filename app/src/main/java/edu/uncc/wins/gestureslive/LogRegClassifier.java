@@ -114,7 +114,10 @@ public class LogRegClassifier extends SegmentHandler {
         if(Constants.SINGLE_POINT_INDECES_MAP.containsKey(index)){
             return Constants.SINGLE_POINT_INDECES_MAP.get(index);
         }
-        else return "UNKNOWN";
+        else if (!Constants.DEMO_MODE) {
+            return "UNKNOWN";
+        }
+        else return "";
 
     }
 
