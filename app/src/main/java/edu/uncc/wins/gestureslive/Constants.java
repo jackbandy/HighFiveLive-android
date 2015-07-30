@@ -78,7 +78,7 @@ public class Constants {
         SINGLE_POINT_INDECES_MAP.put(3, "FIST BUMP");
         SINGLE_POINT_INDECES_MAP.put(4, "LOW WAVE");
         SINGLE_POINT_INDECES_MAP.put(5, "POINT");
-        SINGLE_POINT_INDECES_MAP.put(6, "MOTION OVER");
+        SINGLE_POINT_INDECES_MAP.put(6, "BECKON");
         SINGLE_POINT_INDECES_MAP.put(7, "HIGH FIVE");
         SINGLE_POINT_INDECES_MAP.put(8, "APPLAUSE");
     }
