@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements StreamListener, ClassificationListener {
 
-
-
     private Button dataBtn;
     private Button bandBtn;
     private TextView txtView;
@@ -36,7 +34,6 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         dataBtn = (Button) findViewById(R.id.dataBtn);
         bandBtn = (Button) findViewById(R.id.bandBtn);
         txtView = (TextView) findViewById(R.id.txtView);
@@ -48,6 +45,11 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
             featureLabel = (TextView) findViewById(R.id.featView);
         }
 
+
+        /**
+         * button logic. Nothing fancy, just boolean toggles.
+         * A state pattern would be ideal if the app grows
+         */
         bandBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +94,9 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     }
 
 
+    /**
+     * Sets up a sensor stream from a Microsoft Band
+     */
     public void buildSystemForBand(){
         /*
                 SensorDataStream from MSBand (reports to...)
@@ -121,8 +126,9 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     }
 
 
-
-
+    /**
+     * Sets up a virtual sensor stream from a csv file in the assets folder
+     */
     public void buildSystemForCSV(){
         /*
                 SensorDataStream from csv file (reports to...)
@@ -131,7 +137,6 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 FeatureExtractor (who reports to...)
                 LogRegClassifier (who notifies the world)
         */
-
 
         myStream = new CSVDataStream("trial0.csv", appAssets);
 
@@ -146,13 +151,17 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         AccMagSegmentor mySegmentor = new AccMagSegmentor(myStream, myProcessor);
         //SegmentorFromAnnotation mySegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
 
-
         myStream.addListener(mySegmentor);
         myStream.addListener(this);
         myClassifier.addListener(this);
     }
 
 
+    /**
+     * Android-provided
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -161,6 +170,11 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     }
 
 
+    /**
+     * Android-provided.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -176,6 +190,7 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void newSensorData(Coordinate newCoordinate) {
         final String toPrint = newCoordinate.toShortString();
@@ -188,11 +203,15 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
     }
 
 
+    /**
+     * As a ClassificationListener, MainActivity.java implements this method
+     * and updates the UI with the info
+     * @param classification the classification received
+     */
     public void didReceiveNewClassification(final String classification) {
         //final variables to be used in inner class
         final String tmpClassification = classification;
         //Log.v("TAG","reached newClassification in mainActivity");
-
             this.runOnUiThread(new Runnable() {
                 public void run() {
                     if(!hasDialogue && Constants.SHOW_DIALOGS)
@@ -207,13 +226,17 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                     else{
                         featureLabel.setText("Previous gesture:\n " + classification);
                     }
-                    //showAlertWithTitleAndMessage(tmpClassification, Arrays.toString(tmpFeatureVector));
-                    //featureLabel.setText("Previous segment: " + Arrays.toString(tmpFeatureVector));
                 }
             });
 
     }
 
+
+    /**
+     * convenience method for showing dialogues. handles front-end stuff
+     * @param title The top part of the dialogue
+     * @param message The inner message of the dialogue
+     */
     private void showAlertWithTitleAndMessage(String title, String message){
         Log.v("TAG","reached showAlertWithTitleAndMessage in mainActivity");
         AlertDialog.Builder myBuilder = new AlertDialog.Builder(this);
@@ -230,8 +253,4 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         alertDialog.show();
         hasDialogue = true;
     }
-
-
-
-
 }

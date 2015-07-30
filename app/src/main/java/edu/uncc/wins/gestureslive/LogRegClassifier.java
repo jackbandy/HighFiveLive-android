@@ -52,7 +52,7 @@ public class LogRegClassifier extends SegmentHandler {
 
         /*
         //USED FOR VERIFYING FEATURE EXTRACTION
-
+        //Uncomment if you want to double-check the java features against the python features
         if(!didAssert){
             double[] toCompare = Constants.txtTo1DArray("Gesture0Features.txt");
             for(int i = 0; i < featureVector.length; i++){
@@ -63,7 +63,7 @@ public class LogRegClassifier extends SegmentHandler {
 
             didAssert = true;
         }
-*/
+        */
 
 
         //----------------LOGISTIC REGRESSION CLASSIFICATION ------------------

@@ -46,6 +46,7 @@ public class MSBandDataStream implements SensorDataStream {
     private ArrayList<StreamListener> myListeners;
     private int totalPoints;
 
+
     public MSBandDataStream(Context context){
         client = null;
         this.context = context.getApplicationContext();
@@ -64,6 +65,8 @@ public class MSBandDataStream implements SensorDataStream {
     public void addListener(StreamListener aListener) {
         myListeners.add(aListener);
     }
+
+
 
     public void startupStream() {
         System.out.println("Reached startup stream");
@@ -105,16 +108,10 @@ public class MSBandDataStream implements SensorDataStream {
             accX = accY = accZ = 0;
 
             if (event != null) {
+                //X and Y axis are flipped to align with our model
                 accX = (-1) * event.getAccelerationX();
                 accY = (-1) * event.getAccelerationY();
                 accZ = (1) * event.getAccelerationZ();
-
-                /*
-                accX = event.getAccelerationX();
-                //flip y-axis to fit our model
-                accY = (-1) * event.getAccelerationY();
-                accZ = event.getAccelerationZ();
-                */
             }
 
             Coordinate toPass = new Coordinate(accX, accY, accZ);

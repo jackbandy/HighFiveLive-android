@@ -17,34 +17,43 @@ import java.util.Scanner;
  * Created by jbandy3 on 6/29/2015.
  */
 public class Constants {
+    /*
+    true=obtrusive dialogs for gesture classifications
+     */
     public static final boolean SHOW_DIALOGS = false;
+
+    /*
+    true: vibrate at the beginning and end of each gesture
+     */
     public static final boolean VIBRATE_FOR_SEGMENT = true;
+
+    /*
+    true: vibrate when a new gesture is classified
+     */
     public static final boolean VIBRATE_FOR_GESTURE = false;
 
+    /*
+    true= huge labels, no statistics in classification report,
+    and write blank string for unknown gestures, instead of "UNKNOWN"
+    */
     public static final boolean DEMO_MODE = true;
-    //true: huge labels, no statistics in classification report
 
+    /*
+    How many points the streams should hold on to
+     */
     public static final int COORDINATE_CACHE_SIZE = 256;
-
 
     public static final double[][] MODEL_SINGLE_POINT;
     static {
         MODEL_SINGLE_POINT = txtTo2DArray("LogRegModel.txt");
     }
 
+    /**
+     * Don't use me. Instead of uncommenting and manually editing this, use 'LogRegmodel.txt'
+     * and improve the static methods, like txtTo2DArray, as you need to
+     */
 /*
     public static final double[][] MODEL_SINGLE_POINT = {
-
-//            1. Celebratory Fist Pump
-//            2. High Wave
-//            3. Hand Shake
-//            4. Fist Bump
-//            5. Low Wave
-//            6. Point
-//            7. Motion Over
-//            8. High Five
-//            9. Applause/Clap
-
             {-0.2290525,0.97083804,0.11991338,0.98025067,0.04264776,-0.04114591,2.15193028,0.35774908,-1.64578298,0.87044627,-0.20938853,-1.23662649,2.02001965,-1.71910513,-0.41485726,-34.0598684,0.,-13.30992055,3.72642115,-0.10527761,0.09559909,-0.01223023,0.11251629,0.00197206,-0.29130338,-1.34390105,-0.84219531,-3.70930686,-8.93824498,-8.82752421,0.01375059,0.00512756,-0.02945139,0.0116799,0.00463818,-0.01135656,-0.03107152,0.02095998,0.07111233,0.01687299,-0.0120072,0.00510851,-0.00347153,0.01211053,0.0036966,0.00708099,-0.06293752,0.01677317,0.01349599,-0.01529285,0.08243593,0.04323816,-0.02468052,-0.03086768,0.05063492,0.05743087,-0.08290345,-0.01622769,-0.14492523,-0.02277652},
             {0.15631586,-0.09901359,0.77288315,-1.61395343,-0.02059023,0.19307921,0.02597361,-3.56513533,-3.02103721,-0.15996391,0.16092074,-1.44666162,1.18064077,-3.25007836,0.42771635,-11.436591,0.2712715,4.29995453,-0.84084683,-1.15678367,-0.5388325,0.01929445,-0.09031883,-0.07280908,-0.39809863,-0.77584818,-1.87956132,-19.62435676,2.63025399,8.23626697,-0.00163757,-0.02084513,-0.03398032,0.00735766,0.00482725,-0.01070054,0.0058675,-0.00137195,0.01080867,-0.01784295,-0.05220092,0.0234299,0.08262147,0.04263103,-0.02990984,0.08986935,0.07008008,0.03904521,0.03989944,-0.00929631,-0.02339363,0.02376336,-0.0265254,0.02719128,-0.02042785,0.02018051,0.03412583,0.0527472,0.02611368,-0.06557722},
             {-0.15624313,-0.79802422,-0.42298589,-0.35187808,0.38626999,-0.002325,-1.62261251,0.48797365,-0.23850493,-1.25406253,0.94769889,-3.08472871,0.25551149,0.19360223,2.16186249,0.,3.64422746,5.6424065,0.91071797,0.03366587,-0.0464523,0.03985953,-0.16248024,-0.02228394,-0.81186082,-0.03923121,-0.49384065,10.37343299,-2.45930528,3.62785454,-0.01276299,-0.0013903,-0.01010523,0.00434973,0.01849558,-0.0064601,0.00825468,-0.03649104,-0.08005382,-0.06945785,-0.07261959,-0.01705944,-0.04005992,0.00364017,0.00212815,-0.04899613,-0.12519901,-0.07917272,-0.05226006,-0.02343105,0.02181548,0.06664689,-0.01527776,-0.06765689,-0.04705123,-0.02260309,-0.01851797,0.01443496,0.01140824,-0.01638762},
@@ -54,12 +63,13 @@ public class Constants {
             {-0.37117411,-0.17092524,-0.42879049,0.08475912,-0.44258449,0.03842903,0.,1.09081034,-4.11413983,-0.17337928,-4.23676366,-0.50965924,0.17891001,-0.5466775,1.16048509,0.,0.,15.06386989,0.62750472,0.47101454,0.16174081,-0.8640121,-0.16837213,-0.09055102,-0.39720498,0.23526839,0.09145569,-6.19607995,0.,-6.44285313,-0.00291078,0.0085143,-0.05858386,-0.01442659,-0.01020393,-0.06942559,-0.02469525,-0.03390518,0.03863392,-0.01436076,0.04991497,-0.00389313,0.00655727,-0.02627515,0.00839781,-0.04567824,-0.02594543,-0.07549547,-0.04200488,0.00331304,-0.08177115,-0.07828653,-0.02272171,-0.04226824,-0.05066208,0.1189336,0.1584781,0.18212198,0.17239099,0.1728635},
             {-0.42306179,-1.5591099,-0.49687398,1.36574312,0.14023498,0.84271696,0.07060351,-3.53573473,0.,-0.49179255,-0.87278332,-0.40391485,-3.89147104,-1.14819333,0.92253859,3.28367425,9.76176764,-4.85553953,0.65081551,0.49506137,0.29197406,-0.5568952,-0.21773193,0.0316373,-0.31329464,0.0110029,-0.75156026,0.,-11.5159265,-8.11346451,-0.00064139,-0.00075642,-0.01879047,0.00079785,-0.00836665,-0.00624752,-0.0121361,-0.0039728,-0.06748559,0.0390042,0.06183862,0.00778538,-0.00107876,-0.01201553,-0.00452955,0.02760265,0.02542523,-0.08341947,0.00305535,-0.0884747,-0.04788486,-0.06225287,-0.07735847,-0.05722844,0.07047055,-0.02224719,0.03657192,0.02410224,-0.00342572,-0.05143111},
             {-0.07764603,0.95217496,0.72757861,-1.90424901,-0.47445405,0.71311952,0.71173243,0.03011732,-0.37749389,-0.03065505,-2.42499631,2.39861391,-0.01188931,-1.41960296,-0.68836229,26.38911732,15.95152098,12.04733984,0.21256619,0.17836787,1.61864459,-0.08372622,0.01244685,-0.16561827,-0.4610053,-0.8646239,-1.59517922,0.,3.05412538,14.00814394,-0.00633261,-0.00041264,0.00144648,-0.00008645,-0.00826649,0.04074263,-0.01368981,-0.00440537,-0.00198715,-0.05827458,-0.05172523,-0.07957521,-0.07564945,0.07354637,0.00020207,0.01314127,-0.09342078,0.02918428,0.00252117,0.00035863,0.02229949,-0.11342964,-0.01066395,0.03935729,-0.06019072,-0.0291646,-0.03742845,-0.03606592,0.00174141,-0.0043746}
-
     };
 */
 
+    /**
+     * Used for getting qualitative descriptions of the data
+      */
     public static final Map<Integer, String> SINGLE_POINT_INDECES_MAP;
-
     static {
         SINGLE_POINT_INDECES_MAP = new HashMap<Integer, String>();
         SINGLE_POINT_INDECES_MAP.put(0, "FIST PUMP");
@@ -73,8 +83,12 @@ public class Constants {
         SINGLE_POINT_INDECES_MAP.put(8, "APPLAUSE");
     }
 
-    public static final double[][] MODEL = {
 
+    /**
+     * Don't use me
+     * Model for multiple point gestures (i.e. left, right, up)
+     */
+    public static final double[][] MODEL = {
             /* THIS IS NOT FOR SURE, BASED ON GUESSING ORDER, should be mostly right though
             1. Celebratory Fist Pump
             2. High Wave
@@ -105,6 +119,7 @@ public class Constants {
 
 
     public static final int[] trial0StartPoints = {
+            //used for automatically segmenting the sample data based on our manual annotations
             2069,
             2304,
             2538,
@@ -302,6 +317,9 @@ public class Constants {
             79371};
 
 
+    /**
+     * Read a 1D array from a .txt or .csv file into a Java array
+     */
     public static double[] txtTo1DArray(String fileName) {
         AssetManager mng = MainActivity.appAssets;
         InputStream strm = null;
@@ -334,7 +352,9 @@ public class Constants {
     }
 
 
-
+    /**
+     * Read a 2D array from a .txt or .csv file into a Java double array
+     */
     public static double[][] txtTo2DArray(String fileName){
         AssetManager mng = MainActivity.appAssets;
         InputStream strm = null;
@@ -371,13 +391,10 @@ public class Constants {
         }
 
         double[][] toReturn = new double[linecount][doublesArr.get(0).size()];
-        //Log.v("TAG","dimensions (expect 9 x 60): " + linecount + " x " + doublesArr.get(0).size());
 
         for(int c = 0; c < linecount; c++){
             for(int j = 0; j < toReturn[0].length; j++)
                 toReturn[c][j] = doublesArr.get(c).get(j);
-            //Log.v("TAG","Array " + c + ": " + Arrays.toString(toReturn[c]));
-
         }
 
         return toReturn;

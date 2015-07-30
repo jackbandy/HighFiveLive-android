@@ -5,8 +5,9 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * SegmentProcessor.java
- * Class for a preprocessor to handle a new segment
+ * StretchSegmentToPointLength.java
+ * Class for a preprocessor to handle a new segment and output an adjusted segment.
+ * This is mainly for the DFT, which needs data points provided in a power of two
  *
  * Created by jbandy3 on 6/16/2015.
  */

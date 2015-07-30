@@ -25,9 +25,9 @@ import edu.uncc.wins.gestureslive.Features.ZeroCrossingRate;
 
 /**
  * The second-highest class in the segment handler chain of responsibility:
- * A wrapper class for u sing feature extraction libraries
+ * A wrapper class for using feature extraction libraries
  * before this link, segmentFeatures will be null,
- * this link extracts features for use with handlers up the chain
+ * but this link extracts features for use with handlers up the chain
  *
  * Created by jbandy3 on 6/16/2015.
  */
@@ -50,8 +50,6 @@ public class FeatureExtractor extends SegmentHandler {
         long startTime = Calendar.getInstance().getTimeInMillis();
         //Log.v("TAG", "Beginning extraction: " + startTime);
 
-
-
         ArrayList<Double> allFeatures = new ArrayList<Double>();
         int featCount = 0;
 
@@ -60,7 +58,6 @@ public class FeatureExtractor extends SegmentHandler {
         double[] xArray = new double[numberOfPoints];
         double[] yArray = new double[numberOfPoints];
         double[] zArray = new double[numberOfPoints];
-
 
         //Log.v("TAG", "reached feature extractor 1");
         //extract raw doubles from the Coordinates
@@ -108,15 +105,11 @@ public class FeatureExtractor extends SegmentHandler {
         allFeatures.add(featCount++, pCorr.correlation(xArray, yArray));
         allFeatures.add(featCount++, pCorr.correlation(xArray, zArray));
         allFeatures.add(featCount++, pCorr.correlation(yArray,zArray));
-        /*
-        allFeatures.add(featCount++, new Covariance(xyCorr).getCovarianceMatrix().getEntry(0, 1));
-        allFeatures.add(featCount++, new Covariance(xzCorr).getCovarianceMatrix().getEntry(0, 1));
-        allFeatures.add(featCount++, new Covariance(yzCorr).getCovarianceMatrix().getEntry(0, 1));
-*/
+
 
         //zero crossing rate
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(xArray,128));
-        allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(yArray, 128));
+        allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(yArray,128));
         allFeatures.add(featCount++, ZeroCrossingRate.zeroCrossingRate(zArray,128));
 
 

@@ -10,7 +10,7 @@ import java.util.List;
  * Employs the observer design pattern as a listener,
  * also begins the chain-of-responsibility
  *
- * StdDevSegmentor will segment gestures based on standard deviation thresholds
+ * AccMagSegmentor will segment gestures based on sliding-window magnitude thresholds
  *
  * Created by jbandy3 on 6/16/2015.
  */
@@ -111,7 +111,6 @@ public class AccMagSegmentor implements StreamListener {
 
     private void offsetDidOccur(){
         //Log.v("TAG", "STOPPED segmenting");
-
         if(myBand != null && Constants.VIBRATE_FOR_SEGMENT) myBand.vibrateBandOnce();
 
         int tmpSize = myStream.getCoordinateCache().size();
@@ -120,11 +119,9 @@ public class AccMagSegmentor implements StreamListener {
         toPass.addAll(theList);
         nextHandler.handleNewSegment(toPass, null);
 
-
         windowCount = 0;
         segmentCoordinates.clear();
         isSegmenting = false;
-
     }
 
 
