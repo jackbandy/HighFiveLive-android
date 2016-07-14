@@ -158,7 +158,6 @@ public class MSBandDataStream implements SensorDataStream {
      */
     private class myTask extends AsyncTask<Void, Void, Void> {
         protected Void doInBackground(Void... params) {
-            System.out.println("Reached do in bg");
             try {
                 if (getConnectedBandClient()) {
                     System.out.println("Band is connected.\n");

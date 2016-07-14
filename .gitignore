@@ -1,7 +1,14 @@
 .gradle
+/bin
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea
 .DS_Store
-/build
+build/
+/*/build/
 /captures
+gen/
+.metadata
+.project
+.settings
+.classpath
+.Trashes

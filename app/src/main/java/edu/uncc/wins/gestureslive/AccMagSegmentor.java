@@ -19,7 +19,7 @@ public class AccMagSegmentor implements StreamListener {
     private final double ACC_ONSET_THRESHOLD = 1.1;
     private final double ACC_OFFSET_THRESHOLD = 1.5;
     private final double MIN_GESTURE_DURATION = 48;
-    private final int SAMPLE_WINDOW_SIZE = 24;
+    private final int SAMPLE_WINDOW_SIZE = 20;
 
     private SegmentHandler nextHandler;
     private SensorDataStream myStream;
