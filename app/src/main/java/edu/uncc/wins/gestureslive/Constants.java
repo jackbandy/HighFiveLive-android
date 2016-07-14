@@ -36,7 +36,7 @@ public class Constants {
     true= huge labels, no statistics in classification report,
     and write blank string for unknown gestures, instead of "UNKNOWN"
     */
-    public static final boolean DEMO_MODE = true;
+    public static final boolean DEMO_MODE = false;
 
     /*
     How many points the streams should hold on to

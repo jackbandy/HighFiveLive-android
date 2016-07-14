@@ -148,7 +148,8 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
         SegmentProcessor myProcessor = new SegmentProcessor(myExtractor);
 
         //Create a segmentor that listens to the stream and reports to the processor
-        AccMagSegmentor mySegmentor = new AccMagSegmentor(myStream, myProcessor);
+        PersistentSegmentor mySegmentor = new PersistentSegmentor(myStream,myProcessor);
+        //AccMagSegmentor mySegmentor = new AccMagSegmentor(myStream, myProcessor);
         //SegmentorFromAnnotation mySegmentor = new SegmentorFromAnnotation(myStream, myProcessor);
 
         myStream.addListener(mySegmentor);

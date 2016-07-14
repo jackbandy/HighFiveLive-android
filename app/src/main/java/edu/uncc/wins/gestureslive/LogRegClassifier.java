@@ -83,7 +83,7 @@ public class LogRegClassifier extends SegmentHandler {
         double max = 0;
         String candidates = "";
         for(int i = 0; i < costs.length; i++) {
-            if(costs[i] > .5){
+            if(costs[i] > .8){
                 if (costs[i] > max){
                     maxInd = i;
                     max = costs[i];
@@ -107,6 +107,7 @@ public class LogRegClassifier extends SegmentHandler {
     private double sigmoid(double z) {
         return 1 / (1 + Math.exp(-z));
     }
+
 
 
     private String indToGesture(int index){
