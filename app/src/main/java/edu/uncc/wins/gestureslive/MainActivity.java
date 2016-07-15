@@ -111,12 +111,13 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
 
         //Build the rest of the chain-of-responsibility starting with the top link
         //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
-        LogRegClassifier myClassifier = new LogRegClassifier();
+        KMeansClassifier myClassifier = new KMeansClassifier();
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
         StretchSegmentToPointLength myProcessor = new StretchSegmentToPointLength(myExtractor,128);
 
         //Custom constructor to pass MSBand for haptic feedback
-        AccMagSegmentor mySegmentor = new AccMagSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
+        PersistentSegmentor mySegmentor = new PersistentSegmentor(myStream,myProcessor);
+        //AccMagSegmentor mySegmentor = new AccMagSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
         //StdDevSegmentor mySegmentor = new StdDevSegmentor((MSBandDataStream) myStream, myStream, myProcessor);
 
         myStream.addListener(mySegmentor);
@@ -138,10 +139,12 @@ public class MainActivity extends ActionBarActivity implements StreamListener, C
                 LogRegClassifier (who notifies the world)
         */
 
-        myStream = new CSVDataStream("trial0.csv", appAssets);
+        //myStream = new CSVDataStream("trial0.csv", appAssets);
+        myStream = new MSBandDataStream();
 
         //Build the rest of the chain-of-responsibility starting with the top link
-        LogRegClassifier myClassifier = new LogRegClassifier();
+        //LogRegClassifier myClassifier = new LogRegClassifier();
+        KMeansClassifier myClassifier = new KMeansClassifier();
         //SlidingWindowGestureClassifier myClassifier = new SlidingWindowGestureClassifier();
 
         FeatureExtractor myExtractor = new FeatureExtractor(myClassifier);
